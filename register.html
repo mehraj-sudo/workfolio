@@ -4,106 +4,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account | WorkFolio</title>
+    <meta name="description" content="Create your free WorkFolio account and start building professional resumes and portfolios today.">
+    <link rel="icon" type="image/png" href="1775117704121_logo.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="auth.js"></script>
+    <style>
+        .error-box { background:#fee2e2; border:1px solid #fca5a5; color:#991b1b; border-radius:12px; padding:12px 16px; font-size:0.9rem; margin-bottom:15px; display:none; font-weight:600; }
+        .success-box { background:#d1fae5; border:1px solid #6ee7b7; color:#065f46; border-radius:12px; padding:12px 16px; font-size:0.9rem; margin-bottom:15px; display:none; font-weight:600; }
+        .divider { display:flex; align-items:center; gap:12px; margin:20px 0; }
+        .divider::before, .divider::after { content:''; flex:1; height:1px; background:rgba(0,0,0,0.1); }
+        .divider span { font-size:0.85rem; color:var(--text-light); white-space:nowrap; }
+        .btn-google { width:100%; padding:14px; border-radius:16px; border:1.5px solid rgba(0,0,0,0.1); background:white; color:#334155; font-size:1rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.3s; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+        .btn-google:hover { box-shadow:0 4px 15px rgba(0,0,0,0.12); transform:translateY(-1px); }
+        #registerBtn { width:100%; border:none; padding:15px; border-radius:16px; font-size:1.1rem; cursor:pointer; margin-top:10px; }
+
+        /* Password Strength */
+        .strength-wrap { margin:-10px 0 15px; }
+        .strength-bar  { height:4px; border-radius:2px; background:#e2e8f0; overflow:hidden; margin-bottom:4px; }
+        .strength-fill { height:100%; border-radius:2px; transition:width 0.3s, background 0.3s; width:0; }
+        .strength-text { font-size:0.8rem; color:var(--text-light); }
+
+        /* Benefits list */
+        .benefits { display:flex; flex-direction:column; gap:8px; margin-top:20px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.05); }
+        .benefit-item { display:flex; align-items:center; gap:10px; font-size:0.88rem; color:var(--text-light); }
+        .benefit-item i { color:#10b981; font-size:0.9rem; }
+    </style>
 </head>
 <body>
-
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
     <div class="bg-orb orb-3"></div>
 
-    <nav class="glass-nav" style="position: absolute; top: 20px; width: auto; padding: 10px 25px;">
-        <a href="index.html" class="logo" style="font-size: 1.2rem;">
-            <i class="fas fa-arrow-left" style="color: var(--primary);"></i>
+    <nav class="glass-nav" style="position:absolute;top:20px;width:auto;padding:10px 25px;">
+        <a href="index.html" class="logo" style="font-size:1.2rem;">
+            <i class="fas fa-arrow-left" style="color:var(--primary);"></i>
             <span>Back to Home</span>
         </a>
     </nav>
 
     <div class="auth-wrapper">
         <div class="glass-panel auth-box">
-            
+
             <div class="auth-header">
+                <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--primary),#8b5cf6);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:1.8rem;color:white;">
+                    <i class="fas fa-user-plus"></i>
+                </div>
                 <h2>Join <span class="text-gradient">WorkFolio</span></h2>
-                <p style="color: var(--text-light);">Start building your professional future today.</p>
+                <p style="color:var(--text-light);">Start your career journey — it's completely free.</p>
             </div>
+
+            <div class="error-box"   id="regError"></div>
+            <div class="success-box" id="regSuccess"></div>
+
+            <!-- Google Sign Up -->
+            <button class="btn-google" onclick="signInWithGoogle()" type="button">
+                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                Sign up with Google
+            </button>
+
+            <div class="divider"><span>or create with email</span></div>
 
             <form id="registerForm" onsubmit="processRegister(event)">
-                
                 <div class="input-group">
                     <i class="fas fa-user"></i>
-                    <input type="text" id="regUsername" placeholder="Choose a unique username" required>
+                    <input type="text" id="regUsername" placeholder="Choose a unique username" required autocomplete="username" oninput="validateUsername(this)">
                 </div>
-
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
-                    <input type="text" id="regContact" placeholder="Email or Phone" required>
+                    <input type="text" id="regContact" placeholder="Email or Phone number" required autocomplete="email">
                 </div>
-
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
-                    <input type="password" id="regPassword" placeholder="Password (Min 6 characters)" minlength="6" required>
-                    <i class="fas fa-eye" id="toggleRegEye1" onclick="toggleRegEye('regPassword', 'toggleRegEye1')" style="position: absolute; right: 20px; left: auto; z-index: 10; cursor: pointer; color: var(--text-light);"></i>
+                    <input type="password" id="regPassword" placeholder="Password (min 6 characters)" minlength="6" required autocomplete="new-password" oninput="checkStrength(this.value)">
+                    <i class="fas fa-eye" id="toggleRegEye1" onclick="togglePasswordVisibility('regPassword','toggleRegEye1')" style="position:absolute;right:20px;left:auto;z-index:10;cursor:pointer;color:var(--text-light);"></i>
                 </div>
-
+                <!-- Password Strength Meter -->
+                <div class="strength-wrap">
+                    <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                    <div class="strength-text" id="strengthText">Enter a password above</div>
+                </div>
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
-                    <input type="password" id="regConfirm" placeholder="Re-enter password" minlength="6" required>
-                    <i class="fas fa-eye" id="toggleRegEye2" onclick="toggleRegEye('regConfirm', 'toggleRegEye2')" style="position: absolute; right: 20px; left: auto; z-index: 10; cursor: pointer; color: var(--text-light);"></i>
+                    <input type="password" id="regConfirm" placeholder="Re-enter password" minlength="6" required autocomplete="new-password">
+                    <i class="fas fa-eye" id="toggleRegEye2" onclick="togglePasswordVisibility('regConfirm','toggleRegEye2')" style="position:absolute;right:20px;left:auto;z-index:10;cursor:pointer;color:var(--text-light);"></i>
                 </div>
 
-                <button type="submit" class="btn-gradient" style="width: 100%; border: none; padding: 15px; border-radius: 16px; font-size: 1.1rem; cursor: pointer; margin-top: 10px;">Create Account</button>
-                
+                <button type="submit" id="registerBtn" class="btn-gradient">Create Free Account</button>
             </form>
 
-            <div class="toggle-text">
-                Already have an account? <span onclick="window.location.href='login.html'">Sign In</span>
+            <div class="benefits">
+                <div class="benefit-item"><i class="fas fa-check-circle"></i> Unlimited resume & portfolio creation</div>
+                <div class="benefit-item"><i class="fas fa-check-circle"></i> Autosave across sessions</div>
+                <div class="benefit-item"><i class="fas fa-check-circle"></i> ATS scan history tracking</div>
+                <div class="benefit-item"><i class="fas fa-shield-alt"></i> Your data stays private & local</div>
             </div>
-            
+
+            <div class="toggle-text" style="margin-top:20px;">
+                Already have an account? <span onclick="window.location.href='login.html'" style="color:var(--primary);font-weight:800;cursor:pointer;">Sign In</span>
+            </div>
         </div>
     </div>
 
     <script>
-        // 1. Handle Form Submission
-        function processRegister(event) {
-            event.preventDefault(); // Stop page refresh
-            
-            const user = document.getElementById('regUsername').value;
-            const contact = document.getElementById('regContact').value;
-            const pass = document.getElementById('regPassword').value;
-            const confirmPass = document.getElementById('regConfirm').value;
-
-            // Check if passwords match
-            if (pass !== confirmPass) {
-                alert("❌ Passwords do not match!");
-                return;
-            }
-
-            // Send to database checker in auth.js
-            const result = registerUser(user, contact, pass);
-            
-            if (result.success) {
-                alert("✅ " + result.message + " You can now sign in.");
-                window.location.href = 'login.html'; // Send to login page
-            } else {
-                alert("❌ " + result.message);
-            }
+        function validateUsername(input) {
+            const val = input.value;
+            const valid = /^[a-zA-Z0-9_]{3,20}$/.test(val);
+            input.style.borderColor = val.length === 0 ? '' : (valid ? '#10b981' : '#ef4444');
         }
 
-        // 2. Handle Eye Icons
-        function toggleRegEye(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            
-            if (input.type === "password") {
-                input.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
+        function checkStrength(password) {
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            let score = 0;
+            if (password.length >= 6)  score++;
+            if (password.length >= 10) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+            const levels = [
+                { pct: '0%',   color: '#e2e8f0', label: 'Enter a password above' },
+                { pct: '20%',  color: '#ef4444', label: '🔴 Very Weak' },
+                { pct: '40%',  color: '#f97316', label: '🟠 Weak' },
+                { pct: '60%',  color: '#f59e0b', label: '🟡 Fair' },
+                { pct: '80%',  color: '#10b981', label: '🟢 Strong' },
+                { pct: '100%', color: '#059669', label: '✅ Very Strong' },
+            ];
+            const lv = levels[score] || levels[0];
+            fill.style.width      = lv.pct;
+            fill.style.background = lv.color;
+            text.innerText        = lv.label;
+        }
+
+        async function processRegister(event) {
+            event.preventDefault();
+            const username  = document.getElementById('regUsername').value.trim();
+            const contact   = document.getElementById('regContact').value.trim();
+            const pass      = document.getElementById('regPassword').value;
+            const confirm   = document.getElementById('regConfirm').value;
+            const btn       = document.getElementById('registerBtn');
+            const errBox    = document.getElementById('regError');
+            const succBox   = document.getElementById('regSuccess');
+
+            errBox.style.display  = 'none';
+            succBox.style.display = 'none';
+
+            if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+                errBox.innerText = '❌ Username must be 3-20 characters: letters, numbers, and underscores only.';
+                errBox.style.display = 'block'; return;
+            }
+            if (pass !== confirm) {
+                errBox.innerText = '❌ Passwords do not match!';
+                errBox.style.display = 'block'; return;
+            }
+            if (pass.length < 6) {
+                errBox.innerText = '❌ Password must be at least 6 characters.';
+                errBox.style.display = 'block'; return;
+            }
+
+            btn.disabled    = true;
+            btn.innerHTML   = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+
+            const result = await registerUser(username, contact, pass);
+            if (result.success) {
+                succBox.innerText     = '✅ Account created! Redirecting to sign in...';
+                succBox.style.display = 'block';
+                setTimeout(() => window.location.href = 'login.html', 1500);
             } else {
-                input.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
+                errBox.innerText     = '❌ ' + result.message;
+                errBox.style.display = 'block';
+                btn.disabled         = false;
+                btn.innerHTML        = 'Create Free Account';
             }
         }
     </script>
