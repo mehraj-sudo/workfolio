@@ -2,210 +2,596 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Resume Studio | WorkFolio</title>
+    <link rel="icon" type="image/png" href="1775117704121_logo.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="auth.js"></script>
     <script>requireLogin();</script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+/* ── RESET & BASE ─────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#f8fafc;font-family:'Outfit',sans-serif;overflow-x:hidden;}
+.resume-view{display:none!important;}
+.resume-view.active{display:block!important;animation:fadeSlide .35s ease;}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── NAV ──────────────────────────────────────── */
+.rs-nav{
+  position:sticky;top:0;z-index:900;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px;
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid #e2e8f0;
+}
+.rs-nav .logo-wrap{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem;color:#1e293b;text-decoration:none;}
+.rs-nav .logo-wrap i{color:#4f46e5;}
+.rs-nav .nav-actions{display:flex;align-items:center;gap:10px;}
+
+/* ── DASHBOARD ────────────────────────────────── */
+.dash-wrap{max-width:1200px;margin:0 auto;padding:30px 20px;}
+.dash-hero{
+  background:linear-gradient(135deg,#4f46e5 0%,#8b5cf6 60%,#ec4899 100%);
+  border-radius:24px;padding:40px;color:white;margin-bottom:30px;
+  position:relative;overflow:hidden;
+}
+.dash-hero::after{content:'';position:absolute;right:-60px;top:-60px;width:280px;height:280px;
+  background:rgba(255,255,255,.07);border-radius:50%;}
+.dash-hero h1{font-size:clamp(1.6rem,4vw,2.5rem);font-weight:900;margin-bottom:8px;}
+.dash-hero p{opacity:.85;font-size:1rem;margin-bottom:24px;}
+.dash-stats{display:flex;gap:20px;flex-wrap:wrap;margin-top:20px;}
+.dash-stat{background:rgba(255,255,255,.15);border-radius:12px;padding:12px 20px;backdrop-filter:blur(8px);}
+.dash-stat .num{font-size:1.5rem;font-weight:800;}
+.dash-stat .lbl{font-size:.75rem;opacity:.8;}
+
+.resume-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+.resume-card{
+  background:white;border-radius:18px;overflow:hidden;
+  border:1px solid #e2e8f0;transition:all .25s;cursor:pointer;
+}
+.resume-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(79,70,229,.12);}
+.resume-card-thumb{height:120px;position:relative;overflow:hidden;}
+.resume-card-body{padding:16px;}
+.resume-card-body h3{font-size:.95rem;font-weight:700;color:#1e293b;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.resume-card-body p{font-size:.78rem;color:#94a3b8;margin-bottom:12px;}
+.resume-card-actions{display:flex;gap:8px;}
+.btn-edit-card{flex:1;padding:8px;background:#4f46e5;color:white;border:none;border-radius:10px;font-weight:700;font-size:.82rem;cursor:pointer;transition:.2s;}
+.btn-edit-card:hover{background:#4338ca;}
+.btn-del-card{padding:8px 12px;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;border-radius:10px;cursor:pointer;transition:.2s;}
+.btn-del-card:hover{background:#fee2e2;}
+.new-card{
+  background:white;border-radius:18px;border:2px dashed #cbd5e1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:220px;cursor:pointer;transition:.25s;color:#94a3b8;gap:12px;
+}
+.new-card:hover{border-color:#4f46e5;color:#4f46e5;background:#f5f3ff;}
+.new-card i{font-size:2rem;}
+.new-card span{font-weight:700;font-size:.95rem;}
+
+/* ── TEMPLATES VIEW ───────────────────────────── */
+.tpl-wrap{max-width:1200px;margin:0 auto;padding:30px 20px;}
+.tpl-header{text-align:center;margin-bottom:40px;}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}
+.tpl-card{background:white;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;cursor:pointer;transition:all .25s;}
+.tpl-card:hover{transform:translateY(-5px);box-shadow:0 14px 35px rgba(79,70,229,.15);border-color:#4f46e5;}
+.tpl-preview{height:140px;display:flex;overflow:hidden;position:relative;}
+.tpl-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);color:white;font-size:.7rem;padding:3px 8px;border-radius:20px;backdrop-filter:blur(6px);}
+.tpl-card-body{padding:14px;}
+.tpl-card-body h3{font-size:.9rem;font-weight:800;color:#1e293b;margin-bottom:3px;}
+.tpl-card-body p{font-size:.75rem;color:#94a3b8;margin-bottom:12px;}
+.tpl-choose{width:100%;padding:9px;border:none;border-radius:10px;font-weight:700;font-size:.82rem;cursor:pointer;color:white;transition:.2s;}
+.tpl-choose:hover{filter:brightness(1.1);}
+
+/* ── EDITOR LAYOUT ────────────────────────────── */
+.editor-shell{
+  display:grid;
+  grid-template-columns:360px 1fr;
+  grid-template-rows:auto 1fr;
+  height:calc(100vh - 61px);
+  overflow:hidden;
+}
+.editor-topbar{
+  grid-column:1/-1;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;background:white;border-bottom:1px solid #e2e8f0;
+  flex-wrap:wrap;gap:8px;
+}
+.editor-topbar .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.editor-topbar .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.topbar-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:20px;font-weight:600;font-size:.82rem;cursor:pointer;border:none;transition:.2s;}
+.btn-exit{background:#fef2f2;color:#ef4444;border:1px solid #fecaca;}
+.btn-exit:hover{background:#fee2e2;}
+.btn-pdf{background:white;color:#475569;border:1px solid #cbd5e1;}
+.btn-pdf:hover{background:#f8fafc;}
+.btn-save{background:#4f46e5;color:white;box-shadow:0 3px 10px rgba(79,70,229,.3);}
+.btn-save:hover{background:#4338ca;}
+.autosave-tag{font-size:.75rem;color:#10b981;font-weight:600;opacity:0;transition:opacity .4s;}
+
+/* ── LEFT PANEL (CONTROLS) ────────────────────── */
+.editor-panel{
+  overflow-y:auto;background:#f8fafc;border-right:1px solid #e2e8f0;
+  padding:16px;display:flex;flex-direction:column;gap:12px;
+}
+.editor-panel::-webkit-scrollbar{width:4px;}
+.editor-panel::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px;}
+
+.panel-card{background:white;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;}
+.panel-card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;cursor:pointer;user-select:none;
+  border-bottom:1px solid #f1f5f9;
+}
+.panel-card-head h4{font-size:.88rem;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px;}
+.panel-card-head .chevron{font-size:.75rem;color:#94a3b8;transition:.25s;}
+.panel-card-head.open .chevron{transform:rotate(180deg);}
+.panel-card-body{padding:14px;display:flex;flex-direction:column;gap:10px;}
+.panel-card-body.collapsed{display:none;}
+
+.field-label{font-size:.78rem;font-weight:600;color:#475569;margin-bottom:3px;display:block;}
+.field-input{
+  width:100%;padding:9px 11px;border:1.5px solid #e2e8f0;border-radius:9px;
+  font-size:.85rem;background:white;color:#1e293b;outline:none;
+  transition:border-color .2s;font-family:inherit;
+}
+.field-input:focus{border-color:#4f46e5;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.field-full{grid-column:1/-1;}
+
+/* Tabs inside editor panel */
+.editor-tabs{display:flex;background:#f1f5f9;border-radius:10px;padding:3px;gap:2px;margin-bottom:4px;}
+.editor-tab{flex:1;padding:7px;border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;background:transparent;color:#64748b;transition:.2s;}
+.editor-tab.active{background:white;color:#4f46e5;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+
+/* Dynamic section items */
+.dyn-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;position:relative;}
+.dyn-item-del{position:absolute;top:8px;right:8px;background:white;border:1px solid #fecaca;color:#ef4444;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;transition:.2s;}
+.dyn-item-del:hover{background:#ef4444;color:white;}
+.add-btn{width:100%;padding:9px;background:#f5f3ff;border:1.5px dashed #a78bfa;border-radius:9px;color:#7c3aed;font-weight:700;font-size:.82rem;cursor:pointer;transition:.2s;}
+.add-btn:hover{background:#ede9fe;border-color:#7c3aed;}
+.ai-mini-btn{font-size:.72rem;color:#a855f7;background:#faf5ff;border:1px solid #e9d5ff;border-radius:6px;padding:3px 8px;cursor:pointer;font-weight:700;transition:.2s;}
+.ai-mini-btn:hover{background:#f3e8ff;}
+.grammar-btn{font-size:.72rem;color:#10b981;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:3px 8px;cursor:pointer;font-weight:700;transition:.2s;}
+
+/* Skill slider row */
+.skill-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.skill-row input[type=text]{flex:1;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:.82rem;outline:none;}
+.skill-row input[type=text]:focus{border-color:#4f46e5;}
+.skill-row input[type=range]{width:70px;accent-color:#4f46e5;}
+
+/* Color swatches */
+.swatch-row{display:flex;gap:8px;flex-wrap:wrap;}
+.swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid white;box-shadow:0 0 0 1px #e2e8f0;transition:.2s;}
+.swatch:hover,.swatch.active{box-shadow:0 0 0 3px #4f46e5;}
+
+/* ── RIGHT PANEL (PREVIEW) ────────────────────── */
+.preview-panel{
+  background:#e2e8f0;overflow:auto;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:30px 20px;
+}
+.a4-paper{
+  background:white;width:210mm;min-height:297mm;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
+  margin:0 auto;padding:12mm 15mm;
+  box-sizing:border-box;font-size:.85rem;line-height:1.45;color:#1e293b;
+  transform-origin:top center;transition:transform .2s;
+}
+.a4-paper [contenteditable=true]:hover{outline:1px dashed rgba(79,70,229,.4);border-radius:3px;cursor:text;}
+.a4-paper [contenteditable=true]:focus{outline:2px solid #4f46e5;background:rgba(79,70,229,.03);}
+
+/* ── AI MODAL ─────────────────────────────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:99998;backdrop-filter:blur(6px);display:none;}
+.modal-bg.open{display:block;}
+.ai-modal{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(95vw,580px);z-index:99999;background:white;
+  border-radius:24px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.25);
+  display:none;
+}
+.ai-modal.open{display:block;}
+.ai-modal-head{background:linear-gradient(135deg,#4f46e5,#a855f7);padding:18px 22px;display:flex;justify-content:space-between;align-items:center;}
+.ai-modal-head h3{color:white;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+.ai-modal-head button{background:none;border:none;color:rgba(255,255,255,.8);font-size:1.3rem;cursor:pointer;}
+.ai-modal-body{padding:22px;}
+
+/* ── COVER LETTER PANEL ───────────────────────── */
+.cl-textarea{width:100%;min-height:500px;padding:20px;border:none;font-size:.9rem;line-height:1.8;color:#1e293b;font-family:inherit;resize:none;outline:none;}
+
+/* ── MOBILE RESPONSIVE ────────────────────────── */
+@media(max-width:768px){
+  .editor-shell{
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto 1fr;
+    height:auto;overflow:visible;
+  }
+  .editor-panel{max-height:45vh;border-right:none;border-bottom:1px solid #e2e8f0;}
+  .preview-panel{min-height:400px;padding:15px 8px;}
+  .a4-paper{
+    width:100%;min-height:auto;padding:8mm 6mm;
+    transform:none!important;
+    font-size:.72rem;
+  }
+  .editor-topbar .right{width:100%;justify-content:flex-end;}
+  .tpl-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+  .resume-grid{grid-template-columns:1fr;}
+  .field-row{grid-template-columns:1fr;}
+  .dash-hero{padding:24px;}
+  .dash-stats{gap:10px;}
+}
+@media(max-width:480px){
+  .topbar-btn span{display:none;}
+  .topbar-btn{padding:9px 12px;}
+  .editor-panel{max-height:50vh;}
+}
+</style>
 </head>
 <body>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
 
-    <nav class="glass-nav" style="position: relative; top: 10px; margin-bottom: 20px;">
-        <a href="index.html" class="logo"><i class="fas fa-arrow-left" style="color: var(--primary);"></i><span>Resume Studio</span></a>
-        <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div class="nav-links" id="navMenu">
-            <a href="index.html" onclick="toggleMenu()">Home</a>
-            <a href="ats.html" onclick="toggleMenu()">ATS Scanner</a>
-            <a href="portfolio.html" onclick="toggleMenu()">Portfolio Maker</a>
-            <div class="menu-auth">
-                <span class="userDisplay" style="margin-bottom: 10px; font-weight: 600; color: var(--text-dark);"></span>
-                <a href="login.html" class="authBtn btn-text" style="margin-bottom: 15px;">Sign In</a>
-                <a href="#" onclick="logout(event)" class="logoutBtn btn-text" style="display: none; color: var(--secondary);">Logout</a>
-            </div>
-        </div>
-    </nav>
+<!-- ─── NAV ─────────────────────────────────────── -->
+<nav class="rs-nav">
+  <a href="index.html" class="logo-wrap">
+    <i class="fas fa-layer-group"></i><span>WorkFolio</span>
+  </a>
+  <div class="nav-actions">
+    <span class="userDisplay" style="font-size:.85rem;font-weight:600;color:#475569;"></span>
+    <a href="login.html" class="authBtn" style="font-size:.85rem;font-weight:600;color:#4f46e5;text-decoration:none;">Sign In</a>
+    <a href="#" onclick="logout(event)" class="logoutBtn" style="display:none;font-size:.85rem;font-weight:600;color:#ef4444;text-decoration:none;">Logout</a>
+  </div>
+</nav>
 
-    <div id="view-dashboard" class="resume-view active" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px;">
-            <div>
-                <h1 style="font-size: 2.5rem; margin-bottom: 10px;"><span class="text-gradient">Resume Studio</span></h1>
-                <p style="color: #64748b; font-size: 1.1rem; margin:0;">Build, manage, and edit your professional resumes.</p>
-            </div>
-            <button class="btn-gradient" onclick="switchView('view-templates')" style="padding: 12px 25px; border-radius: 30px;"><i class="fas fa-plus"></i> Create New Resume</button>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;" id="resumeList"></div>
+<!-- ══════════════════════════════════════════════
+     VIEW: DASHBOARD
+══════════════════════════════════════════════════ -->
+<div id="view-dashboard" class="resume-view active">
+  <div class="dash-wrap">
+
+    <!-- Hero Banner -->
+    <div class="dash-hero">
+      <div style="position:relative;z-index:1;">
+        <h1>📄 Resume Studio</h1>
+        <p>Build, manage, and download professional resumes in minutes.</p>
+        <button class="topbar-btn btn-save" onclick="switchView('view-templates')" style="border-radius:12px;padding:12px 22px;font-size:.9rem;">
+          <i class="fas fa-plus"></i> <span>Create New Resume</span>
+        </button>
+        <div class="dash-stats" id="dashStats"></div>
+      </div>
     </div>
 
-    <div id="view-templates" class="resume-view" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
-        <div style="text-align: center; margin-bottom: 50px; position: relative;">
-            <button class="btn-outline" onclick="switchView('view-dashboard')" style="position: absolute; left: 0; top: 0; border-radius: 20px; padding: 8px 18px; font-size: 0.9rem;">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+    <!-- Resume Cards -->
+    <div class="resume-grid" id="resumeList">
+      <div class="new-card" onclick="switchView('view-templates')">
+        <i class="fas fa-plus-circle"></i>
+        <span>Create New Resume</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VIEW: TEMPLATE PICKER
+══════════════════════════════════════════════════ -->
+<div id="view-templates" class="resume-view">
+  <div class="tpl-wrap">
+    <div class="tpl-header">
+      <button class="topbar-btn btn-exit" onclick="switchView('view-dashboard')" style="margin-bottom:20px;">
+        <i class="fas fa-arrow-left"></i> <span>Back</span>
+      </button>
+      <h1 style="font-size:clamp(1.6rem,4vw,2.6rem);font-weight:900;color:#1e293b;">Choose a <span style="color:#a855f7;">Template</span></h1>
+      <p style="color:#64748b;margin-top:8px;">Pick a layout — you can switch anytime.</p>
+    </div>
+    <div class="tpl-grid" id="templateGrid30"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VIEW: EDITOR
+══════════════════════════════════════════════════ -->
+<div id="view-editor" class="resume-view">
+  <div class="editor-shell">
+
+    <!-- Top Bar -->
+    <div class="editor-topbar">
+      <div class="left">
+        <button class="topbar-btn btn-exit" onclick="exitWithoutSaving()">
+          <i class="fas fa-arrow-left"></i> <span>Exit</span>
+        </button>
+        <span class="autosave-tag" id="autosaveTag">✓ Saved</span>
+      </div>
+      <div class="right">
+        <button class="topbar-btn btn-pdf" id="pdfExportBtn" onclick="downloadPDF()">
+          <i class="fas fa-file-pdf"></i> <span>Download PDF</span>
+        </button>
+        <button class="topbar-btn" onclick="showCoverLetter()" style="background:#f0fdf4;color:#10b981;border:1px solid #bbf7d0;">
+          <i class="fas fa-envelope-open-text"></i> <span>Cover Letter</span>
+        </button>
+        <button class="topbar-btn btn-save" onclick="saveAndExit()">
+          <i class="fas fa-save"></i> <span>Save</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Left: Controls -->
+    <div class="editor-panel" id="editorPanel">
+
+      <!-- Tabs: Resume | Design | Sections -->
+      <div class="editor-tabs">
+        <button class="editor-tab active" onclick="switchEditorTab('personal',this)">Personal</button>
+        <button class="editor-tab" onclick="switchEditorTab('design',this)">Design</button>
+        <button class="editor-tab" onclick="switchEditorTab('sections',this)">Sections</button>
+      </div>
+
+      <!-- ── PERSONAL TAB ── -->
+      <div id="tab-personal">
+        <div class="panel-card">
+          <div class="panel-card-head open" onclick="toggleCard(this)">
+            <h4><i class="fas fa-user" style="color:#4f46e5;"></i> Personal Info</h4>
+            <i class="fas fa-chevron-down chevron"></i>
+          </div>
+          <div class="panel-card-body">
+            <!-- Photo -->
+            <div style="text-align:center;padding:8px 0;">
+              <img id="previewPhoto" src="https://ui-avatars.com/api/?name=User&background=4F46E5&color=fff&size=100"
+                   style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid #e2e8f0;margin-bottom:10px;">
+              <div style="display:flex;gap:8px;justify-content:center;">
+                <label for="photoUpload" style="font-size:.78rem;font-weight:700;color:#4f46e5;cursor:pointer;background:#f5f3ff;padding:5px 12px;border-radius:8px;border:1px solid #e9d5ff;">📷 Upload</label>
+                <input type="file" id="photoUpload" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+                <button onclick="removePhoto()" style="font-size:.78rem;font-weight:700;color:#ef4444;background:#fef2f2;padding:5px 12px;border-radius:8px;border:1px solid #fecaca;cursor:pointer;">Remove</button>
+              </div>
+            </div>
+            <label class="field-label">Full Name</label>
+            <input class="field-input" type="text" id="inpName" placeholder="John Doe" oninput="syncText('inpName',this.value)">
+            <label class="field-label">Professional Title</label>
+            <input class="field-input" type="text" id="inpTitle" placeholder="Senior Software Engineer" oninput="syncText('inpTitle',this.value)">
+            <div class="field-row">
+              <div><label class="field-label">Email</label><input class="field-input" type="email" id="inpEmail" placeholder="john@example.com" oninput="syncText('inpEmail',this.value)"></div>
+              <div><label class="field-label">Phone</label><input class="field-input" type="text" id="inpPhone" placeholder="+1 234 567" oninput="syncText('inpPhone',this.value)"></div>
+            </div>
+            <label class="field-label">Location</label>
+            <input class="field-input" type="text" id="inpLocation" placeholder="New York, NY" oninput="syncText('inpLocation',this.value)">
+            <div class="field-row">
+              <div><label class="field-label">LinkedIn URL</label><input class="field-input" type="text" id="inpLinkedin" placeholder="linkedin.com/in/..." oninput="syncText('inpLinkedin',this.value)"></div>
+              <div><label class="field-label">GitHub URL</label><input class="field-input" type="text" id="inpGithub" placeholder="github.com/..." oninput="syncText('inpGithub',this.value)"></div>
+            </div>
+            <label class="field-label">Professional Summary</label>
+            <textarea class="field-input" id="inpSummary" rows="4" placeholder="Brief summary..." oninput="syncText('inpSummary',this.value)" style="resize:vertical;"></textarea>
+            <button onclick="openAIModal('summary',null)" style="width:100%;padding:10px;background:linear-gradient(135deg,#4f46e5,#a855f7);color:white;border:none;border-radius:10px;font-weight:700;font-size:.82rem;cursor:pointer;">
+              ✨ AI Summary Generator
             </button>
-            
-            <h1 style="font-size: 2.8rem; font-weight: 900; margin-bottom: 10px; color: #1e293b;">
-                Choose a <span style="color: #c026d3;">Professional Pattern</span>
-            </h1>
-            <p style="color: #64748b; font-size: 1.1rem; margin:0;">Select a layout below to start editing instantly.</p>
+          </div>
         </div>
+      </div>
 
-        <div id="templateGrid30" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 35px; padding-bottom: 40px;"></div>
+      <!-- ── DESIGN TAB ── -->
+      <div id="tab-design" style="display:none;">
+        <div class="panel-card">
+          <div class="panel-card-head open" onclick="toggleCard(this)">
+            <h4><i class="fas fa-palette" style="color:#ec4899;"></i> Theme & Style</h4>
+            <i class="fas fa-chevron-down chevron"></i>
+          </div>
+          <div class="panel-card-body">
+            <label class="field-label">Accent Color</label>
+            <div class="swatch-row" id="colorSwatches">
+              <div class="swatch" style="background:#0f172a;" data-color="#0f172a" onclick="pickColor('#0f172a',this)"></div>
+              <div class="swatch" style="background:#4f46e5;" data-color="#4f46e5" onclick="pickColor('#4f46e5',this)"></div>
+              <div class="swatch" style="background:#7c3aed;" data-color="#7c3aed" onclick="pickColor('#7c3aed',this)"></div>
+              <div class="swatch" style="background:#db2777;" data-color="#db2777" onclick="pickColor('#db2777',this)"></div>
+              <div class="swatch" style="background:#0891b2;" data-color="#0891b2" onclick="pickColor('#0891b2',this)"></div>
+              <div class="swatch" style="background:#059669;" data-color="#059669" onclick="pickColor('#059669',this)"></div>
+              <div class="swatch" style="background:#d97706;" data-color="#d97706" onclick="pickColor('#d97706',this)"></div>
+              <div class="swatch" style="background:#dc2626;" data-color="#dc2626" onclick="pickColor('#dc2626',this)"></div>
+              <input type="color" id="selColor" value="#4f46e5" oninput="saveData();updatePreview()" style="width:30px;height:30px;border:none;padding:0;border-radius:50%;cursor:pointer;background:none;" title="Custom Color">
+            </div>
+            <label class="field-label" style="margin-top:8px;">Skill Display Style</label>
+            <select class="field-input" id="selSkillStyle" onchange="saveData();updatePreview()">
+              <option value="bar-percent">Classic Bar with %</option>
+              <option value="bar-simple">Clean Bar</option>
+              <option value="dots">5-Dot Proficiency</option>
+              <option value="stars">5-Star Rating</option>
+              <option value="pill-solid">Solid Pills</option>
+              <option value="pill-outline">Outlined Pills</option>
+              <option value="tags-square">Square Tags</option>
+              <option value="minimal-line">Minimalist Underline</option>
+              <option value="grid-2col">2-Column Check Grid</option>
+              <option value="text-comma">Comma Separated</option>
+              <option value="text-bullet">Bullet Separated</option>
+            </select>
+            <label class="field-label" style="margin-top:8px;">Page Mode</label>
+            <select class="field-input" id="selPageMode" onchange="saveData();updatePreview()">
+              <option value="single">Single Page (A4)</option>
+              <option value="multi">Multi-Page</option>
+            </select>
+            <label class="field-label" style="margin-top:8px;"><i class="fas fa-grip-vertical"></i> Drag to Reorder Sections</label>
+            <div id="dragContainer" style="min-height:70px;padding:8px;background:#f8fafc;border-radius:9px;border:1.5px dashed #cbd5e1;margin-top:4px;display:flex;flex-direction:column;gap:5px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTIONS TAB ── -->
+      <div id="tab-sections" style="display:none;">
+        <div id="dynamicEditorSections"></div>
+      </div>
+
     </div>
 
-    <div id="view-editor" class="resume-view" style="max-width: 1600px; margin: 0 auto; padding: 20px;">
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <button onclick="exitWithoutSaving()" style="border: 1px solid #fca5a5; color: #ef4444; background: #fef2f2; padding: 8px 18px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
-                <i class="fas fa-arrow-left"></i> Exit Without Saving
-            </button>
-            
-            <div style="display: flex; gap: 15px;">
-                <button onclick="downloadPDF()" style="border: 1px solid #cbd5e1; color: #475569; background: white; padding: 8px 18px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
-                    <i class="fas fa-file-pdf"></i> Download PDF
-                </button>
-                <button onclick="saveAndExit()" style="border: none; color: white; background: #6366f1; padding: 8px 20px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    <i class="fas fa-save"></i> Save & Exit
-                </button>
-            </div>
-        </div>
-
-        <div class="editor-layout">
-            <div class="editor-controls" style="background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.8);">
-                
-                <div class="editor-section" style="background: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; margin-bottom: 20px;">
-                    
-                    <h3 style="color: #1e293b; font-size: 1.15rem; margin-top: 0; margin-bottom: 30px; border: none; font-weight: 800; display: flex; align-items: center;">
-                        <i class="fas fa-user" style="color: #1e293b; margin-right: 10px;"></i> Personal Details
-                    </h3>
-                    
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <img id="previewPhoto" src="https://ui-avatars.com/api/?name=User&background=4F46E5&color=fff&size=100" style="width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                        <div style="display: flex; justify-content: center; gap: 15px; align-items: center;">
-                            <label for="photoUpload" style="font-size: 0.8rem; font-weight: 800; color: #1e293b; cursor: pointer; margin: 0;">Upload Photo</label>
-                            <input type="file" id="photoUpload" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
-                            <button onclick="removePhoto()" style="border: 1px solid #fca5a5; color: #ef4444; background: white; padding: 4px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='white'">Remove</button>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="margin:0; font-weight: 600; font-size: 0.85rem; color:#1e293b;">Full Name</label>
-                            <input type="text" id="inpName" placeholder="e.g. John Doe" oninput="syncText('inpName', this.value)" style="margin:0; width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; outline: none; background: #f8fafc;">
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="margin:0; font-weight: 600; font-size: 0.85rem; color:#1e293b;">Professional Title</label>
-                            <input type="text" id="inpTitle" placeholder="e.g. Senior Software Engineer" oninput="syncText('inpTitle', this.value)" style="margin:0; width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; outline: none; background: #f8fafc;">
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="margin:0; font-weight: 600; font-size: 0.85rem; color:#1e293b;">Email</label>
-                            <input type="email" id="inpEmail" placeholder="john@example.com" oninput="syncText('inpEmail', this.value)" style="margin:0; width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; outline: none; background: #f8fafc;">
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="margin:0; font-weight: 600; font-size: 0.85rem; color:#1e293b;">Phone</label>
-                            <input type="text" id="inpPhone" placeholder="+1 234 567 890" oninput="syncText('inpPhone', this.value)" style="margin:0; width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; outline: none; background: #f8fafc;">
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="margin:0; font-weight: 600; font-size: 0.85rem; color:#1e293b;">Location</label>
-                            <input type="text" id="inpLocation" placeholder="New York, NY" oninput="syncText('inpLocation', this.value)" style="margin:0; width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; outline: none; background: #f8fafc;">
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="margin:0; font-weight: 600; font-size: 0.85rem; color:#1e293b;">GitHub / Portfolio</label>
-                            <input type="text" id="inpGithub" placeholder="github.com/johndoe" oninput="syncText('inpGithub', this.value)" style="margin:0; width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; outline: none; background: #f8fafc;">
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="margin:0; font-weight: 600; font-size: 0.85rem; color:#1e293b;">LinkedIn</label>
-                            <input type="text" id="inpLinkedin" placeholder="linkedin.com/in/johndoe" oninput="syncText('inpLinkedin', this.value)" style="margin:0; width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; outline: none; background: #f8fafc;">
-                        </div>
-                    </div>
-
-                    <label style="font-weight: 600; font-size: 0.85rem; color:#1e293b; margin-bottom: 8px; display: block;">Professional Summary</label>
-                    <textarea id="inpSummary" rows="4" placeholder="Brief summary of your background and goals..." oninput="syncText('inpSummary', this.value)" style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; resize: vertical; outline: none; background: #f8fafc; transition: 0.2s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#cbd5e1'"></textarea>
-                    
-                    <button onclick="openAIModal('summary', null)" style="width: 100%; background: #faf5ff; border: 1px solid #d8b4fe; color: #a855f7; padding: 12px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#f3e8ff'" onmouseout="this.style.background='#faf5ff'">
-                         <i class="fas fa-magic"></i> AI Summary Generator
-                    </button>
-                </div>
-
-                <div class="editor-section" style="background: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; margin-bottom: 20px;">
-                    <h3 style="color: #1e293b; font-size: 1.15rem; margin-top: 0; margin-bottom: 20px; border: none; font-weight: 800; display: flex; align-items: center;">
-                        <i class="fas fa-paint-roller" style="color: #1e293b; margin-right: 10px;"></i> Design & Layout
-                    </h3>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="font-size: 0.85rem; font-weight: 600; color: #1e293b;">Theme Color</label>
-                            <input type="color" id="selColor" value="#4F46E5" onchange="saveData(); updatePreview()" style="width: 100%; height: 40px; border: none; border-radius: 8px; cursor: pointer; padding: 0;">
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label style="font-size: 0.85rem; font-weight: 600; color: #1e293b;">Skill Style Visualizer</label>
-                            <select id="selSkillStyle" class="glass-dropdown" onchange="saveData(); updatePreview()" style="margin-bottom: 0; padding: 10px 12px; font-size: 0.9rem; border-radius: 8px; background: #f8fafc; border: 1px solid #cbd5e1;">
-                                <option value="bar-percent">Classic Bar with %</option>
-                                <option value="bar-simple">Clean Bar (No Numbers)</option>
-                                <option value="dots">5-Dot Proficiency</option>
-                                <option value="stars">5-Star Rating</option>
-                                <option value="pill-solid">Solid Colored Pills</option>
-                                <option value="pill-outline">Outlined Pills</option>
-                                <option value="tags-square">Square Accent Tags</option>
-                                <option value="minimal-line">Minimalist Underline</option>
-                                <option value="grid-2col">2-Column Check Grid</option>
-                                <option value="text-comma">Inline Comma Separated</option>
-                                <option value="text-bullet">Inline Bullet Separated</option>
-                                <option value="text-simple">Simple Text List</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <label style="font-size: 0.85rem; font-weight: 600; color: #1e293b;"><i class="fas fa-arrows-alt-v"></i> Drag to Reorder Sections</label>
-                    <div id="dragContainer" style="min-height: 80px; padding: 10px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px dashed #cbd5e1; margin-top: 8px;"></div>
-                </div>
-
-                <div id="dynamicEditorSections"></div>
-            </div>
-
-            <div class="preview-wrapper">
-                <div id="resumePreview" class="a4-paper"></div>
-            </div>
-        </div>
+    <!-- Right: Preview -->
+    <div class="preview-panel">
+      <div id="resumePreview" class="a4-paper"></div>
     </div>
 
-    <div id="aiOverlay" onclick="closeAIModal()" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background: rgba(15, 23, 42, 0.6); z-index: 999999; backdrop-filter: blur(8px); transition: 0.3s;"></div>
-    
-    <div id="aiModal" class="glass-panel" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width: 95%; max-width: 600px; z-index: 1000000; background: rgba(255,255,255,0.95); padding: 0; border-radius: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); overflow: hidden; border: 1px solid rgba(168, 85, 247, 0.3);">
-        <div style="background: linear-gradient(135deg, #4f46e5, #a855f7); padding: 20px 25px; display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin:0; color:#ffffff; font-weight: 700; font-size: 1.3rem; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-sparkles"></i> AI Resume Co-Pilot
-            </h3>
-            <button onclick="closeAIModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#ffffff; opacity: 0.8; transition: 0.2s;"><i class="fas fa-times"></i></button>
-        </div>
-        <div style="padding: 25px;">
-            <p id="aiPromptText" style="color: #475569; margin-bottom: 15px; font-size: 0.95rem;">What role are you targeting?</p>
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="aiRoleInput" placeholder="e.g. Senior Frontend Developer" style="flex-grow: 1; padding: 12px 15px; border-radius: 12px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: #f8fafc; color: #1e293b; box-sizing:border-box;">
-                <button onclick="generateAIContent()" style="background: linear-gradient(135deg, #4f46e5, #a855f7); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;"><i class="fas fa-magic"></i></button>
-            </div>
-            <div id="aiLoader" style="display: none; text-align: center; padding: 30px 0; color: #a855f7;">
-                <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                <p style="font-size: 0.9rem; font-weight: 600; color: #64748b;">AI is writing...</p>
-            </div>
-            <div id="aiResultsArea" style="display: none; max-height: 350px; overflow-y: auto; padding-right: 5px;">
-                <p style="font-size: 0.85rem; color: #10b981; font-weight: 600; margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Click to add to resume.</p>
-                <div id="aiOptionsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
-            </div>
-        </div>
-    </div>
+  </div><!-- /editor-shell -->
+</div>
 
-    <script src="script.js"></script>
-    <script src="resume.js"></script>
+<!-- ══════════════════════════════════════════════
+     VIEW: COVER LETTER
+══════════════════════════════════════════════════ -->
+<div id="view-coverletter" class="resume-view">
+  <div style="max-width:900px;margin:0 auto;padding:20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <button class="topbar-btn btn-exit" onclick="switchView('view-editor')" style="margin-bottom:10px;"><i class="fas fa-arrow-left"></i> <span>Back to Resume</span></button>
+        <h2 style="font-size:1.5rem;font-weight:800;color:#1e293b;">Cover Letter Generator</h2>
+        <p style="color:#64748b;font-size:.9rem;">AI-generated and fully editable. Download as PDF when ready.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="topbar-btn" onclick="generateCoverLetter()" style="background:linear-gradient(135deg,#4f46e5,#a855f7);color:white;">
+          <i class="fas fa-magic"></i> <span>Generate with AI</span>
+        </button>
+        <button class="topbar-btn btn-pdf" onclick="downloadCoverLetterPDF()">
+          <i class="fas fa-file-pdf"></i> <span>Download PDF</span>
+        </button>
+      </div>
+    </div>
+    <div id="clJobInput" style="background:white;border-radius:14px;padding:18px;border:1px solid #e2e8f0;margin-bottom:16px;">
+      <label class="field-label">Paste Job Description (for better AI matching)</label>
+      <textarea class="field-input" id="clJobDesc" rows="4" placeholder="Paste the job description here..." style="resize:vertical;margin-top:4px;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+        <input class="field-input" type="text" id="clCompany" placeholder="Company Name" style="flex:1;">
+        <input class="field-input" type="text" id="clRole" placeholder="Target Role" style="flex:1;">
+      </div>
+    </div>
+    <div id="coverLetterPreview" style="background:white;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;min-height:500px;">
+      <div style="background:linear-gradient(135deg,#4f46e5,#8b5cf6);height:6px;"></div>
+      <textarea class="cl-textarea" id="clContent" placeholder="Click 'Generate with AI' above, or type your cover letter here directly..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ── AI MODAL ─────────────────────────────────── -->
+<div class="modal-bg" id="aiOverlay" onclick="closeAIModal()"></div>
+<div class="ai-modal" id="aiModal">
+  <div class="ai-modal-head">
+    <h3><i class="fas fa-stars"></i> AI Resume Co-Pilot</h3>
+    <button onclick="closeAIModal()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="ai-modal-body">
+    <p id="aiPromptText" style="color:#475569;font-size:.9rem;margin-bottom:12px;">What role are you targeting?</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <input class="field-input" type="text" id="aiRoleInput" placeholder="e.g. Senior Frontend Developer" style="flex:1;">
+      <button onclick="generateAIContent()" style="padding:9px 16px;background:linear-gradient(135deg,#4f46e5,#a855f7);color:white;border:none;border-radius:9px;font-weight:700;cursor:pointer;white-space:nowrap;"><i class="fas fa-magic"></i> Generate</button>
+    </div>
+    <div id="aiLoader" style="display:none;text-align:center;padding:24px;color:#a855f7;">
+      <i class="fas fa-circle-notch fa-spin" style="font-size:1.8rem;margin-bottom:8px;"></i>
+      <p style="font-size:.85rem;color:#64748b;font-weight:600;">Writing for you...</p>
+    </div>
+    <div id="aiResultsArea" style="display:none;max-height:320px;overflow-y:auto;">
+      <p style="font-size:.8rem;color:#10b981;font-weight:700;margin-bottom:8px;"><i class="fas fa-check-circle"></i> Click any option to add it.</p>
+      <div id="aiOptionsList" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="resume.js"></script>
+<script>
+// ── UI HELPERS ─────────────────────────────
+function toggleCard(head) {
+  head.classList.toggle('open');
+  const body = head.nextElementSibling;
+  body.classList.toggle('collapsed');
+}
+function switchEditorTab(tab, btn) {
+  ['personal','design','sections'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===tab?'flex':'none';
+    // personal & sections use flex-direction:column
+    if(t===tab) document.getElementById('tab-'+t).style.flexDirection = 'column';
+  });
+  document.querySelectorAll('.editor-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function pickColor(hex, el) {
+  document.getElementById('selColor').value = hex;
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  saveData(); updatePreview();
+}
+function showCoverLetter() {
+  const p = resumeData.personal;
+  if(document.getElementById('clRole') && !document.getElementById('clRole').value) {
+    document.getElementById('clRole').value = p.title || '';
+  }
+  switchView('view-coverletter');
+}
+function generateCoverLetter() {
+  const p        = resumeData.personal;
+  const name     = p.name    || 'Your Name';
+  const role     = document.getElementById('clRole').value    || p.title || 'the position';
+  const company  = document.getElementById('clCompany').value || 'your company';
+  const jobDesc  = document.getElementById('clJobDesc').value;
+  const skills   = (resumeData.skills||[]).slice(0,5).map(s=>s.name).join(', ') || 'relevant skills';
+  const exp      = resumeData.experience[0];
+
+  // Smart paragraph selection based on job description keywords
+  const jdLower  = jobDesc.toLowerCase();
+  const techFocus= /developer|engineer|code|software|data|cloud/i.test(jdLower);
+  const desFocus = /design|ux|ui|creative|figma/i.test(jdLower);
+  const bizFocus = /manager|lead|sales|marketing|business/i.test(jdLower);
+
+  let middlePara = `I bring strong experience in ${skills}. `;
+  if (techFocus) middlePara += `I am passionate about building scalable, maintainable systems and have a proven track record of delivering impactful technical solutions.`;
+  else if (desFocus) middlePara += `I thrive at the intersection of aesthetics and usability, crafting experiences that are both beautiful and intuitive.`;
+  else if (bizFocus) middlePara += `I excel at driving cross-functional alignment and translating strategic goals into measurable business outcomes.`;
+  else middlePara += `My background equips me with a versatile skill set directly applicable to this role.`;
+
+  const expLine = exp ? `In my role as ${exp.title} at ${exp.company}, ${exp.desc ? exp.desc.replace(/•|-/g,'').split('\n')[0].trim() : 'I delivered meaningful results'}.` : '';
+
+  const today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const letter = `${today}
+
+Hiring Manager
+${company}
+
+Dear Hiring Manager,
+
+I am writing to express my enthusiastic interest in the ${role} position at ${company}. As a dedicated professional with experience in ${skills}, I am confident that my background aligns closely with what you are seeking.
+
+${middlePara}
+
+${expLine}
+
+${company}'s reputation for innovation and excellence resonates deeply with my professional values. I am particularly excited about the opportunity to contribute to your team and help advance your mission.
+
+I would welcome the opportunity to discuss how my skills and experiences can contribute to ${company}'s continued success. Thank you for considering my application. I look forward to the possibility of speaking with you.
+
+Warm regards,
+${name}
+${p.email||''}  |  ${p.phone||''}
+${p.linkedin||''}`;
+
+  document.getElementById('clContent').value = letter;
+}
+function downloadCoverLetterPDF() {
+  const content = document.getElementById('clContent').value;
+  const p = resumeData.personal;
+  const div = document.createElement('div');
+  div.style.cssText='font-family:Georgia,serif;font-size:12pt;line-height:1.7;padding:30mm;white-space:pre-wrap;color:#1e293b;background:white;';
+  div.innerText = content;
+  document.body.appendChild(div);
+  html2pdf().set({margin:0,filename:(p.name||'CoverLetter')+'_CoverLetter.pdf',html2canvas:{scale:2},jsPDF:{format:'letter'}}).from(div).save().then(()=>document.body.removeChild(div));
+}
+
+// ── DASHBOARD STATS ─────────────────────────
+window.addEventListener('load', () => {
+  const stats = document.getElementById('dashStats');
+  if (stats) {
+    const count = getSafeResumes().length;
+    stats.innerHTML = `
+      <div class="dash-stat"><div class="num">${count}</div><div class="lbl">Resumes Saved</div></div>
+      <div class="dash-stat"><div class="num">30+</div><div class="lbl">Templates</div></div>
+      <div class="dash-stat"><div class="num">∞</div><div class="lbl">Free Edits</div></div>
+    `;
+  }
+});
+
+// ── AUTOSAVE BADGE ─────────────────────────
+const _origSave = window.saveData;
+window.saveData = function() {
+  _origSave && _origSave();
+  const tag = document.getElementById('autosaveTag');
+  if(tag){tag.style.opacity='1';setTimeout(()=>tag.style.opacity='0',2500);}
+};
+</script>
 </body>
 </html>
