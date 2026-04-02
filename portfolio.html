@@ -1,193 +1,454 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Portfolio Studio | WorkFolio</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Portfolio Studio | WorkFolio</title>
+  <link rel="icon" type="image/png" href="1775117704121_logo.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:#0f172a;color:#f8fafc;overflow-x:hidden;}
+.pf-view{display:none!important;}
+.pf-view.active{display:flex!important;flex-direction:column;}
+
+/* ── TOP NAV ─────────────────────────────── */
+.pf-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;background:#1e293b;border-bottom:1px solid #334155;
+  position:sticky;top:0;z-index:500;flex-shrink:0;
+}
+.pf-brand{font-size:1rem;font-weight:800;letter-spacing:-.3px;cursor:pointer;display:flex;align-items:center;gap:8px;}
+.pf-brand i{color:#a855f7;}
+.pf-nav-center{display:flex;gap:6px;background:#0f172a;border-radius:8px;padding:3px;}
+.pf-nav-tab{background:transparent;border:none;color:#94a3b8;padding:6px 14px;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;}
+.pf-nav-tab.active{background:#334155;color:white;}
+.pf-nav-right{display:flex;gap:8px;align-items:center;}
+.pf-btn{border:none;border-radius:8px;padding:7px 14px;font-weight:600;font-size:.8rem;cursor:pointer;transition:.2s;font-family:inherit;display:flex;align-items:center;gap:6px;}
+.pf-btn-ghost{background:transparent;color:#cbd5e1;border:1px solid #334155;}
+.pf-btn-ghost:hover{background:#334155;}
+.pf-btn-primary{background:#a855f7;color:white;}
+.pf-btn-primary:hover{background:#9333ea;}
+.pf-btn-green{background:#10b981;color:white;}
+.pf-btn-green:hover{background:#059669;}
+.save-status{font-size:.75rem;color:#10b981;font-weight:600;opacity:0;transition:.4s;margin-right:4px;}
+
+/* ── DASHBOARD ───────────────────────────── */
+#view-dashboard{background:#0f172a;min-height:100vh;}
+.pf-dash{max-width:1200px;margin:0 auto;padding:30px 20px;}
+.pf-dash-hero{
+  background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#a855f7 100%);
+  border-radius:20px;padding:36px;margin-bottom:28px;position:relative;overflow:hidden;
+}
+.pf-dash-hero::after{content:'';position:absolute;right:-80px;top:-80px;width:260px;height:260px;background:rgba(255,255,255,.06);border-radius:50%;}
+.pf-dash-hero h1{font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:900;color:white;margin-bottom:8px;}
+.pf-dash-hero p{color:rgba(255,255,255,.8);margin-bottom:20px;font-size:.95rem;}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;}
+.proj-card{background:#1e293b;border:1px solid #334155;border-radius:16px;overflow:hidden;transition:.25s;cursor:pointer;}
+.proj-card:hover{border-color:#a855f7;transform:translateY(-4px);box-shadow:0 12px 30px rgba(168,85,247,.2);}
+.proj-thumb{height:150px;position:relative;overflow:hidden;}
+.proj-info{padding:16px;}
+.proj-title{font-size:.95rem;font-weight:700;color:white;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.proj-meta{font-size:.75rem;color:#94a3b8;display:flex;justify-content:space-between;}
+.proj-actions{display:flex;gap:8px;padding:12px 16px;background:#0f172a;border-top:1px solid #334155;}
+.proj-actions button{flex:1;padding:7px;border-radius:8px;font-weight:600;font-size:.78rem;cursor:pointer;border:none;transition:.2s;font-family:inherit;}
+.btn-edit-proj{background:#334155;color:white;}
+.btn-edit-proj:hover{background:#475569;}
+.btn-del-proj{background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.3)!important;}
+.btn-del-proj:hover{background:rgba(239,68,68,.1);}
+.new-proj-card{background:transparent;border:2px dashed #334155;border-radius:16px;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.25s;color:#64748b;gap:10px;}
+.new-proj-card:hover{border-color:#a855f7;color:#a855f7;}
+.new-proj-card i{font-size:2rem;}
+
+/* ── EDITOR ──────────────────────────────── */
+#view-editor{height:100vh;overflow:hidden;}
+.pf-workspace{display:grid;grid-template-columns:280px 1fr 260px;flex:1;overflow:hidden;height:calc(100vh - 53px);}
+
+/* Left sidebar */
+.pf-sidebar-left{
+  background:#1e293b;border-right:1px solid #334155;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.pf-sidebar-section{border-bottom:1px solid #334155;padding:14px;}
+.pf-sidebar-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:#64748b;font-weight:700;margin-bottom:10px;}
+.pf-select{width:100%;background:#0f172a;border:1px solid #334155;color:white;padding:8px 10px;border-radius:8px;font-size:.82rem;outline:none;font-family:inherit;cursor:pointer;appearance:none;}
+.pf-select:focus{border-color:#a855f7;}
+.pf-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* AI Copilot */
+.ai-copilot{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  border-bottom:1px solid #334155;
+}
+.ai-copilot-head{
+  padding:10px 14px;font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:#94a3b8;display:flex;align-items:center;gap:6px;
+  border-bottom:1px solid #334155;
+}
+.ai-chat-area{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.ai-chat-area::-webkit-scrollbar{width:3px;}
+.ai-chat-area::-webkit-scrollbar-thumb{background:#334155;border-radius:2px;}
+.ai-bubble{padding:9px 12px;border-radius:10px;font-size:.8rem;line-height:1.5;max-width:90%;word-break:break-word;}
+.ai-bubble.bot{align-self:flex-start;background:#0f172a;color:#cbd5e1;border-bottom-left-radius:2px;}
+.ai-bubble.user{align-self:flex-end;background:#a855f7;color:white;border-bottom-right-radius:2px;}
+.ai-bubble.thinking{align-self:flex-start;background:#0f172a;padding:10px 14px;}
+.typing-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#a855f7;animation:tdot 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes tdot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.ai-input-row{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #334155;}
+.ai-input-row input{flex:1;background:#0f172a;border:1px solid #334155;color:white;padding:8px 10px;border-radius:8px;font-size:.8rem;outline:none;font-family:inherit;}
+.ai-input-row input::placeholder{color:#475569;}
+.ai-input-row input:focus{border-color:#a855f7;}
+.ai-input-row button{background:#a855f7;border:none;color:white;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1rem;transition:.2s;flex-shrink:0;}
+.ai-input-row button:hover{background:#9333ea;}
+
+/* Quick command chips */
+.ai-chips{display:flex;flex-wrap:wrap;gap:5px;padding:8px 12px;border-top:1px solid #1e293b;}
+.chip{padding:4px 9px;background:#1e293b;border:1px solid #334155;border-radius:20px;font-size:.7rem;color:#94a3b8;cursor:pointer;transition:.2s;white-space:nowrap;}
+.chip:hover{background:#334155;color:white;border-color:#475569;}
+
+/* Canvas area */
+.pf-canvas{background:#020617;display:flex;flex-direction:column;overflow:hidden;}
+.canvas-bar{
+  display:flex;align-items:center;padding:8px 14px;background:#1e293b;
+  border-bottom:1px solid #334155;gap:10px;flex-shrink:0;
+}
+.browser-dots{display:flex;gap:5px;}
+.browser-dots span{width:10px;height:10px;border-radius:50%;}
+.url-bar{flex:1;text-align:center;font-size:.75rem;color:#64748b;background:#0f172a;padding:4px 10px;border-radius:5px;}
+.viewport-btns button{background:none;border:none;color:#64748b;cursor:pointer;padding:4px 6px;transition:.2s;}
+.viewport-btns button:hover{color:white;}
+.iframe-wrap{flex:1;background:white;transition:all .3s;}
+#livePreview{width:100%;height:100%;border:none;}
+
+/* Right sidebar */
+.pf-sidebar-right{
+  background:#1e293b;border-left:1px solid #334155;
+  overflow-y:auto;padding:14px;
+}
+.pf-sidebar-right::-webkit-scrollbar{width:3px;}
+.pf-sidebar-right::-webkit-scrollbar-thumb{background:#334155;border-radius:2px;}
+.pf-input{width:100%;background:#0f172a;border:1px solid #334155;color:white;padding:8px 10px;border-radius:8px;font-size:.8rem;outline:none;font-family:inherit;margin-bottom:8px;}
+.pf-input:focus{border-color:#a855f7;}
+textarea.pf-input{resize:vertical;min-height:60px;}
+.pf-add-btn{width:100%;padding:7px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);color:#a855f7;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;}
+.pf-add-btn:hover{background:rgba(168,85,247,.2);}
+.pf-list-item{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px;margin-bottom:7px;position:relative;}
+.pf-list-item .del{position:absolute;top:6px;right:6px;background:none;border:none;color:#64748b;cursor:pointer;font-size:.75rem;transition:.2s;}
+.pf-list-item .del:hover{color:#ef4444;}
+.pf-section-head{display:flex;justify-content:space-between;align-items:center;margin:14px 0 8px;}
+.pf-section-head span{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:#64748b;font-weight:700;}
+
+/* ── MODALS ──────────────────────────────── */
+.pf-modal-bg{position:fixed;inset:0;background:rgba(2,6,23,.8);backdrop-filter:blur(6px);z-index:9000;display:none;align-items:center;justify-content:center;}
+.pf-modal-bg.open{display:flex;}
+.pf-modal{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:24px;width:min(95vw,440px);box-shadow:0 25px 50px rgba(0,0,0,.5);}
+.pf-modal h3{font-size:1.1rem;font-weight:700;color:white;margin-bottom:16px;}
+
+/* Deploy modal */
+.deploy-log{font-family:monospace;font-size:.75rem;color:#94a3b8;background:#0f172a;padding:12px;border-radius:8px;height:90px;overflow:hidden;margin:12px 0;line-height:1.6;}
+
+/* ── MOBILE ──────────────────────────────── */
+@media(max-width:900px){
+  .pf-workspace{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;height:auto;overflow:visible;}
+  .pf-sidebar-left{max-height:45vh;border-right:none;border-bottom:1px solid #334155;}
+  .pf-canvas{min-height:50vh;}
+  .pf-sidebar-right{border-left:none;border-top:1px solid #334155;}
+  .ai-copilot{max-height:250px;}
+  #view-editor{height:auto;overflow:visible;}
+  .pf-nav-center{display:none;}
+}
+@media(max-width:600px){
+  .pf-dash-hero{padding:22px;}
+  .proj-grid{grid-template-columns:1fr;}
+  .pf-nav-right .pf-btn-ghost{display:none;}
+  .pf-btn span{display:none;}
+  .pf-btn{padding:8px 10px;}
+}
+</style>
 </head>
-<body class="saas-editor-body">
+<body>
 
-    <div id="view-dashboard" style="display: block; width: 100%; height: 100%; overflow-y: auto;">
-        <nav class="saas-nav">
-            <div class="nav-brand"><i class="fas fa-cube" style="color: #a855f7;"></i> Studio<b>AI</b></div>
-            <div class="nav-actions">
-                <a href="resume.html" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'"><i class="fas fa-file-alt"></i> Go to Resume Studio</a>
-            </div>
-        </nav>
-        <div class="dashboard-container">
-            <div class="dashboard-header">
-                <div>
-                    <h1 style="margin: 0 0 10px 0; font-size: 2.5rem;">My Portfolios</h1>
-                    <p style="margin: 0; color: #94a3b8;">Manage, edit, and deploy your web projects.</p>
-                </div>
-                <button class="btn-primary" onclick="createNewProject()" style="padding: 12px 24px; font-size: 1rem;"><i class="fas fa-plus"></i> New Project</button>
-            </div>
-            <div class="project-grid" id="dashboardGrid"></div>
+<!-- ══════════════════════════════════════════
+     VIEW: DASHBOARD
+════════════════════════════════════════════ -->
+<div id="view-dashboard" class="pf-view active" style="min-height:100vh;flex-direction:column;">
+  <nav class="pf-nav">
+    <div class="pf-brand"><i class="fas fa-cube"></i> Studio<b>AI</b></div>
+    <div class="pf-nav-right">
+      <a href="resume.html" style="color:#94a3b8;text-decoration:none;font-size:.82rem;font-weight:600;"><i class="fas fa-file-alt"></i> Resume Studio</a>
+      <button class="pf-btn pf-btn-primary" onclick="createNewProject()"><i class="fas fa-plus"></i> <span>New Project</span></button>
+    </div>
+  </nav>
+  <div class="pf-dash">
+    <div class="pf-dash-hero">
+      <div style="position:relative;z-index:1;">
+        <h1>🎨 Portfolio Studio</h1>
+        <p>Design stunning portfolio websites with 30 templates and AI-powered editing.</p>
+        <button class="pf-btn pf-btn-primary" onclick="createNewProject()" style="border-radius:12px;padding:11px 22px;font-size:.9rem;">
+          <i class="fas fa-plus"></i> <span>New Portfolio Project</span>
+        </button>
+      </div>
+    </div>
+    <div class="proj-grid" id="dashboardGrid">
+      <div class="new-proj-card" onclick="createNewProject()">
+        <i class="fas fa-plus-circle"></i>
+        <span style="font-weight:700;">Create New Project</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VIEW: EDITOR
+════════════════════════════════════════════ -->
+<div id="view-editor" class="pf-view">
+
+  <!-- Nav -->
+  <nav class="pf-nav">
+    <div class="pf-brand" onclick="switchView('view-dashboard')"><i class="fas fa-arrow-left"></i> Dashboard</div>
+    <div class="pf-nav-center">
+      <button class="pf-nav-tab active">Design</button>
+      <button class="pf-nav-tab" onclick="openCmdPalette()">⌘ Commands</button>
+    </div>
+    <div class="pf-nav-right">
+      <span class="save-status" id="saveStatus">✓ Saved</span>
+      <button class="pf-btn pf-btn-ghost" onclick="saveProject()"><i class="fas fa-save"></i> <span>Save</span></button>
+      <button class="pf-btn pf-btn-ghost" onclick="exportCode()"><i class="fas fa-download"></i> <span>Export</span></button>
+      <button class="pf-btn pf-btn-primary" onclick="startDeployment()"><i class="fas fa-rocket"></i> <span>Deploy</span></button>
+    </div>
+  </nav>
+
+  <!-- Workspace -->
+  <div class="pf-workspace">
+
+    <!-- ── LEFT: Design Controls + AI Co-Pilot ── -->
+    <div class="pf-sidebar-left">
+      <div class="pf-sidebar-section">
+        <div class="pf-sidebar-label">Layout Template</div>
+        <select id="templateSelect" class="pf-select" onchange="switchLayout(this.value)" style="font-weight:700;color:#a855f7;"></select>
+      </div>
+      <div class="pf-sidebar-section">
+        <div class="pf-grid-2">
+          <div>
+            <div class="pf-sidebar-label">Color Mode</div>
+            <select id="themeSelect" class="pf-select" onchange="updateData('theme',this.value)">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </div>
+          <div>
+            <div class="pf-sidebar-label">Font</div>
+            <select id="fontSelect" class="pf-select" onchange="updateData('font',this.value)"></select>
+          </div>
         </div>
+      </div>
+
+      <!-- AI Co-Pilot -->
+      <div class="ai-copilot">
+        <div class="ai-copilot-head">
+          <i class="fas fa-robot" style="color:#a855f7;"></i> AI Co-Pilot
+          <span style="margin-left:auto;font-size:.65rem;background:#a855f7;color:white;padding:2px 6px;border-radius:10px;">LIVE</span>
+        </div>
+        <div class="ai-chat-area" id="aiChat">
+          <div class="ai-bubble bot">👋 Hi! I'm your AI Co-Pilot. I can change layouts, colors, fonts, add content, and more. Try a command below or type your own!</div>
+        </div>
+        <!-- Quick Chips -->
+        <div class="ai-chips" id="aiChips">
+          <div class="chip" onclick="sendChip('make it dark mode')">🌙 Dark</div>
+          <div class="chip" onclick="sendChip('switch to bento grid layout')">⬛ Bento</div>
+          <div class="chip" onclick="sendChip('make it minimalist')">✨ Minimal</div>
+          <div class="chip" onclick="sendChip('switch to terminal hacker theme')">💻 Terminal</div>
+          <div class="chip" onclick="sendChip('apply glassmorphism')">🔮 Glass</div>
+          <div class="chip" onclick="sendChip('make it brutalist')">💥 Brutal</div>
+          <div class="chip" onclick="sendChip('switch to cyberpunk neon')">⚡ Neon</div>
+          <div class="chip" onclick="sendChip('make it light and clean')">☀️ Light</div>
+          <div class="chip" onclick="sendChip('import my resume data')">📄 Sync Resume</div>
+          <div class="chip" onclick="sendChip('add a new project')">➕ Add Project</div>
+          <div class="chip" onclick="sendChip('change font to Roboto')">Aa Font</div>
+          <div class="chip" onclick="sendChip('make it Marvel Avengers theme')">🦸 Marvel</div>
+        </div>
+        <div class="ai-input-row">
+          <input type="text" id="aiInput" placeholder="Ask AI anything..." onkeypress="if(event.key==='Enter')sendAI()">
+          <button onclick="sendAI()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
     </div>
 
-    <div id="view-editor" style="display: none; height: 100vh; flex-direction: column;">
-        <nav class="saas-nav">
-            <div class="nav-brand" style="cursor: pointer; transition: color 0.2s;" onclick="switchView('view-dashboard')" onmouseover="this.style.color='#a855f7'" onmouseout="this.style.color='#fff'">
-                <i class="fas fa-arrow-left"></i> Dashboard
-            </div>
-            <div class="nav-center">
-                <button class="nav-tab active">Design</button>
-                <button class="nav-tab" onclick="document.getElementById('cmdPalette').classList.add('active')">⌘ K Command</button>
-            </div>
-            <div class="nav-actions">
-                <span id="saveStatus" style="color: #94a3b8; font-size: 0.8rem; margin-right: 15px;"></span>
-                <button class="btn-ghost" onclick="saveProject()"><i class="fas fa-save"></i> Save</button>
-                <button class="btn-primary" onclick="startDeployment()"><i class="fas fa-rocket"></i> Deploy</button>
-            </div>
-        </nav>
-
-        <div class="workspace">
-            <aside class="sidebar-left">
-                <div class="sidebar-header">Design Controls</div>
-                <div class="prop-group">
-                    <label>Architecture Pattern</label>
-                    <select id="templateSelect" class="prop-input" onchange="switchLayout(this.value)" style="cursor: pointer; font-weight: 600; color: #a855f7;"></select>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                    <div class="prop-group" style="margin: 0;">
-                        <label>Color Mode</label>
-                        <select id="themeSelect" class="prop-input" onchange="updateData('theme', this.value)" style="cursor: pointer;">
-                            <option value="dark">Dark Mode</option>
-                            <option value="light">Light Mode</option>
-                        </select>
-                    </div>
-                    <div class="prop-group" style="margin: 0;">
-                        <label>Base Font</label>
-                        <select id="fontSelect" class="prop-input" onchange="updateData('font', this.value)" style="cursor: pointer;"></select>
-                    </div>
-                </div>
-
-                <div class="sidebar-header" style="margin-top: 10px;">AI Co-Pilot</div>
-                <div class="ai-chat-box" id="aiChat">
-                    <div class="ai-bubble bot">Hello! Pick a layout above, or tell me what to build. Try: <em>"Make it a dark bento grid"</em> or <em>"Assemble the Avengers"</em></div>
-                </div>
-                <div class="ai-input-wrapper">
-                    <input type="text" id="aiInput" placeholder="Generate or edit..." onkeypress="if(event.key==='Enter') sendAI()">
-                    <button onclick="sendAI()"><i class="fas fa-paper-plane"></i></button>
-                </div>
-            </aside>
-
-            <main class="canvas-area">
-                <div class="canvas-toolbar">
-                    <div class="browser-dots"><span></span><span></span><span></span></div>
-                    <div class="url-bar">localhost:3000/preview <i class="fas fa-lock" style="font-size:10px; margin-left:8px; opacity:0.5;"></i></div>
-                    <div class="device-toggles">
-                        <button onclick="setViewport('100%')" title="Desktop View"><i class="fas fa-desktop"></i></button>
-                        <button onclick="setViewport('768px')" title="Tablet View"><i class="fas fa-tablet-alt"></i></button>
-                        <button onclick="setViewport('375px')" title="Mobile View"><i class="fas fa-mobile-alt"></i></button>
-                    </div>
-                </div>
-                <div class="iframe-container" id="iframeWrapper">
-                    <iframe id="livePreview" srcdoc="" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"></iframe>
-                </div>
-            </main>
-
-            <aside class="sidebar-right">
-                <div class="sidebar-header">Global Data</div>
-                
-                <div class="prop-group">
-                    <label>Profile Image</label>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img id="pPhotoPreview" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #334155;">
-                        <input type="file" id="pPhotoInput" accept="image/*" onchange="handlePhotoUpload(event)" style="font-size: 0.8rem; color: #94a3b8; flex-grow: 1; cursor: pointer;">
-                    </div>
-                </div>
-
-                <div class="prop-group"><label>Full Name</label><input type="text" id="pName" class="prop-input" oninput="updateData('name', this.value)"></div>
-                <div class="prop-group"><label>Headline</label><input type="text" id="pTitle" class="prop-input" oninput="updateData('title', this.value)"></div>
-                <div class="prop-group"><label>Bio Summary</label><textarea id="pAbout" class="prop-input" rows="3" oninput="updateData('about', this.value)"></textarea></div>
-
-                <div class="sidebar-header" style="margin-top: 20px;">Social Links</div>
-                <div class="prop-group"><label><i class="fas fa-envelope"></i> Email Address</label><input type="email" id="pEmail" class="prop-input" placeholder="hello@example.com" oninput="updateData('email', this.value)"></div>
-                <div class="prop-group"><label><i class="fab fa-linkedin"></i> LinkedIn URL</label><input type="text" id="pLinkedin" class="prop-input" placeholder="https://linkedin.com/in/..." oninput="updateData('linkedin', this.value)"></div>
-                <div class="prop-group"><label><i class="fab fa-github"></i> GitHub URL</label><input type="text" id="pGithub" class="prop-input" placeholder="https://github.com/..." oninput="updateData('github', this.value)"></div>
-
-                <div class="sidebar-header" style="margin-top: 20px; display:flex; justify-content:space-between;">Skills <button onclick="addListItem('skills')" class="btn-icon"><i class="fas fa-plus"></i></button></div>
-                <div id="skillsList" class="project-manager"></div>
-
-                <div class="sidebar-header" style="margin-top: 20px; display:flex; justify-content:space-between;">Experience <button onclick="addListItem('experience')" class="btn-icon"><i class="fas fa-plus"></i></button></div>
-                <div id="experienceList" class="project-manager"></div>
-
-                <div class="sidebar-header" style="margin-top: 20px; display:flex; justify-content:space-between;">Projects <button onclick="addListItem('projects')" class="btn-icon"><i class="fas fa-plus"></i></button></div>
-                <div id="projectsList" class="project-manager"></div>
-                
-                <div class="sidebar-header" style="margin-top: 20px; display:flex; justify-content:space-between;">Certifications <button onclick="addListItem('certs')" class="btn-icon"><i class="fas fa-plus"></i></button></div>
-                <div id="certsList" class="project-manager"></div>
-
-                <div class="sidebar-header" style="margin-top: 20px; color: #10b981;">Contact Me Section</div>
-                <div class="prop-group"><label><i class="fas fa-phone"></i> Phone Number</label><input type="text" id="pPhone" class="prop-input" placeholder="+1 234 567 890" oninput="updateData('phone', this.value)"></div>
-                <div class="prop-group"><label><i class="fas fa-map-marker-alt"></i> Location</label><input type="text" id="pLocation" class="prop-input" placeholder="City, Country" oninput="updateData('location', this.value)"></div>
-                <div class="prop-group"><label><i class="fas fa-paper-plane"></i> Contact Form Email</label><input type="email" id="pContactEmail" class="prop-input" placeholder="Receive messages at..." oninput="updateData('contactEmail', this.value)"></div>
-                <div style="height: 40px;"></div>
-            </aside>
+    <!-- ── CENTER: Live Preview ── -->
+    <div class="pf-canvas">
+      <div class="canvas-bar">
+        <div class="browser-dots">
+          <span style="background:#ef4444;"></span>
+          <span style="background:#f59e0b;"></span>
+          <span style="background:#10b981;"></span>
         </div>
+        <div class="url-bar">localhost:3000 · live preview</div>
+        <div class="viewport-btns">
+          <button onclick="setViewport('100%')" title="Desktop"><i class="fas fa-desktop"></i></button>
+          <button onclick="setViewport('768px')" title="Tablet"><i class="fas fa-tablet-alt"></i></button>
+          <button onclick="setViewport('390px')" title="Mobile"><i class="fas fa-mobile-alt"></i></button>
+        </div>
+      </div>
+      <div id="iframeWrapper" style="flex:1;display:flex;justify-content:center;overflow:hidden;">
+        <iframe id="livePreview" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" style="width:100%;height:100%;border:none;"></iframe>
+      </div>
     </div>
 
-    <div id="cmdPalette" class="modal-overlay" onclick="if(event.target===this) this.classList.remove('active')">
-        <div class="cmd-box">
-            <input type="text" placeholder="Type a command or search... (Try 'Export')" autofocus>
-            <div class="cmd-list">
-                <div class="cmd-item" onclick="exportCode()"><i class="fas fa-download"></i> Export HTML/Tailwind Code</div>
-                <div class="cmd-item" onclick="openShareModal()"><i class="fas fa-share-alt" style="color: #3b82f6;"></i> Share Portfolio via Email</div>
-                <div class="cmd-item" onclick="syncFromResume()"><i class="fas fa-sync"></i> Import data from Resume Studio</div>
-                <div class="cmd-item" onclick="startDeployment()"><i class="fas fa-rocket"></i> Deploy to Edge Network</div>
-            </div>
-        </div>
-    </div>
+    <!-- ── RIGHT: Data Controls ── -->
+    <div class="pf-sidebar-right">
 
-    <div id="deployModal" class="deploy-modal">
-        <div class="deploy-box">
-            <div id="deployLoader">
-                <div class="deploy-spinner"></div>
-                <div class="deploy-status" id="deployStatusTxt">Building Project...</div>
-                <div class="deploy-logs" id="deployLogs">> Initializing build environment...<br></div>
-            </div>
-            <div id="deploySuccess" style="display: none;">
-                <i class="fas fa-check-circle deploy-icon"></i>
-                <div class="deploy-status">Deployment Successful!</div>
-                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Your portfolio is now live on the global edge network.</p>
-                <div class="deploy-link" id="deployLinkTxt" style="display: block;"></div>
-                <button class="btn-primary" onclick="document.getElementById('deployModal').classList.remove('active')" style="margin-top: 20px; width: 100%;">Continue Editing</button>
-            </div>
-        </div>
-    </div>
+      <div class="pf-sidebar-label">Profile</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <img id="pPhotoPreview" src="" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #334155;flex-shrink:0;">
+        <input type="file" id="pPhotoInput" accept="image/*" onchange="handlePhotoUpload(event)" style="font-size:.75rem;color:#94a3b8;flex:1;cursor:pointer;">
+      </div>
+      <input type="text" id="pName"  class="pf-input" placeholder="Full Name"  oninput="updateData('name',this.value)">
+      <input type="text" id="pTitle" class="pf-input" placeholder="Headline / Title" oninput="updateData('title',this.value)">
+      <textarea id="pAbout" class="pf-input" placeholder="Bio / About" oninput="updateData('about',this.value)"></textarea>
 
-    <div id="shareModal" class="deploy-modal" onclick="if(event.target===this) this.classList.remove('active')">
-        <div class="deploy-box" style="text-align: left; max-width: 450px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h2 style="margin: 0; color: white; font-size: 1.5rem;">Share Portfolio</h2>
-                <i class="fas fa-times" style="color: #94a3b8; cursor: pointer; font-size: 1.2rem;" onclick="document.getElementById('shareModal').classList.remove('active')"></i>
-            </div>
-            
-            <form onsubmit="shareViaEmail(event)">
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="color: #94a3b8; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 8px;">Recipient's Email</label>
-                    <input type="email" id="shareEmail" class="prop-input" placeholder="colleague@example.com" required style="width: 100%; padding: 12px; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; color: white;">
-                </div>
-                
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label style="color: #94a3b8; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 8px;">Subject</label>
-                    <input type="text" id="shareSubject" class="prop-input" value="Check out my new Portfolio!" required style="width: 100%; padding: 12px; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; color: white;">
-                </div>
-                
-                <div class="form-group" style="margin-bottom: 25px;">
-                    <label style="color: #94a3b8; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 8px;">Message</label>
-                    <textarea id="shareMessage" class="prop-input" rows="4" required style="width: 100%; padding: 12px; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; color: white; font-family: inherit;">Hi, I just built my new portfolio using WorkFolio. Please take a look at the attached file!</textarea>
-                </div>
-                
-                <button type="submit" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; border-radius: 12px; cursor: pointer;"><i class="fas fa-paper-plane" style="margin-right: 8px;"></i> Send via Email</button>
-            </form>
-        </div>
-    </div>
+      <div class="pf-sidebar-label" style="margin-top:4px;">Links</div>
+      <input type="email" id="pEmail"    class="pf-input" placeholder="Email"   oninput="updateData('email',this.value)">
+      <input type="text"  id="pLinkedin" class="pf-input" placeholder="LinkedIn URL" oninput="updateData('linkedin',this.value)">
+      <input type="text"  id="pGithub"   class="pf-input" placeholder="GitHub URL" oninput="updateData('github',this.value)">
 
-    <script src="portfolio.js"></script>
+      <div class="pf-section-head">
+        <span>Skills</span>
+        <button class="pf-add-btn" onclick="addListItem('skills')" style="width:auto;padding:4px 10px;"><i class="fas fa-plus"></i> Add</button>
+      </div>
+      <div id="skillsList"></div>
+
+      <div class="pf-section-head">
+        <span>Experience</span>
+        <button class="pf-add-btn" onclick="addListItem('experience')" style="width:auto;padding:4px 10px;"><i class="fas fa-plus"></i> Add</button>
+      </div>
+      <div id="experienceList"></div>
+
+      <div class="pf-section-head">
+        <span>Projects</span>
+        <button class="pf-add-btn" onclick="addListItem('projects')" style="width:auto;padding:4px 10px;"><i class="fas fa-plus"></i> Add</button>
+      </div>
+      <div id="projectsList"></div>
+
+      <div class="pf-section-head">
+        <span>Certifications</span>
+        <button class="pf-add-btn" onclick="addListItem('certs')" style="width:auto;padding:4px 10px;"><i class="fas fa-plus"></i> Add</button>
+      </div>
+      <div id="certsList"></div>
+
+      <div class="pf-sidebar-label" style="margin-top:10px;color:#10b981;">Contact Section</div>
+      <input type="text"  id="pPhone"       class="pf-input" placeholder="Phone" oninput="updateData('phone',this.value)">
+      <input type="text"  id="pLocation"    class="pf-input" placeholder="Location" oninput="updateData('location',this.value)">
+      <input type="email" id="pContactEmail" class="pf-input" placeholder="Contact Form Email" oninput="updateData('contactEmail',this.value)">
+      <div style="height:30px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODALS
+════════════════════════════════════════════ -->
+
+<!-- Command Palette -->
+<div class="pf-modal-bg" id="cmdPalette" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="pf-modal" style="width:min(95vw,550px);">
+    <input type="text" placeholder="Type a command..." class="pf-input" autofocus style="font-size:1rem;margin-bottom:12px;">
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div onclick="exportCode();document.getElementById('cmdPalette').classList.remove('open');" style="padding:12px 14px;color:#cbd5e1;cursor:pointer;border-radius:8px;display:flex;gap:12px;align-items:center;transition:.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='transparent'"><i class="fas fa-download" style="color:#a855f7;width:16px;"></i> Export HTML/Tailwind Code</div>
+      <div onclick="openShareModal();document.getElementById('cmdPalette').classList.remove('open');" style="padding:12px 14px;color:#cbd5e1;cursor:pointer;border-radius:8px;display:flex;gap:12px;align-items:center;transition:.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='transparent'"><i class="fas fa-share-alt" style="color:#3b82f6;width:16px;"></i> Share via Email</div>
+      <div onclick="syncFromResume();document.getElementById('cmdPalette').classList.remove('open');" style="padding:12px 14px;color:#cbd5e1;cursor:pointer;border-radius:8px;display:flex;gap:12px;align-items:center;transition:.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='transparent'"><i class="fas fa-sync" style="color:#10b981;width:16px;"></i> Import Data from Resume Studio</div>
+      <div onclick="startDeployment();document.getElementById('cmdPalette').classList.remove('open');" style="padding:12px 14px;color:#cbd5e1;cursor:pointer;border-radius:8px;display:flex;gap:12px;align-items:center;transition:.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='transparent'"><i class="fas fa-rocket" style="color:#f59e0b;width:16px;"></i> Deploy to Edge Network</div>
+    </div>
+  </div>
+</div>
+
+<!-- Deploy Modal -->
+<div class="pf-modal-bg" id="deployModal">
+  <div class="pf-modal" style="text-align:center;">
+    <div id="deployLoader">
+      <div style="width:50px;height:50px;border:4px solid #334155;border-top-color:#a855f7;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px;"></div>
+      <div style="font-size:1rem;font-weight:700;color:white;margin-bottom:8px;" id="deployStatusTxt">Building Project...</div>
+      <div class="deploy-log" id="deployLogs">> Initializing...<br></div>
+    </div>
+    <div id="deploySuccess" style="display:none;">
+      <div style="font-size:3rem;margin-bottom:12px;">🚀</div>
+      <div style="font-size:1.1rem;font-weight:700;color:white;margin-bottom:8px;">Deployment Successful!</div>
+      <p style="color:#94a3b8;font-size:.85rem;margin-bottom:14px;">Your portfolio is live on the edge network.</p>
+      <div id="deployLinkTxt" style="background:#0f172a;padding:12px;border-radius:8px;border:1px solid #10b981;color:#10b981;font-weight:700;margin-bottom:14px;word-break:break-all;font-size:.85rem;"></div>
+      <button class="pf-btn pf-btn-primary" style="width:100%;padding:12px;" onclick="document.getElementById('deployModal').classList.remove('open')">Continue Editing</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div class="pf-modal-bg" id="shareModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="pf-modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="margin:0;">Share Portfolio</h3>
+      <button onclick="document.getElementById('shareModal').classList.remove('open')" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.2rem;"><i class="fas fa-times"></i></button>
+    </div>
+    <form onsubmit="shareViaEmail(event)">
+      <label style="font-size:.78rem;color:#94a3b8;font-weight:600;display:block;margin-bottom:5px;">Recipient Email</label>
+      <input type="email" id="shareEmail" class="pf-input" placeholder="colleague@example.com" required style="margin-bottom:10px;">
+      <label style="font-size:.78rem;color:#94a3b8;font-weight:600;display:block;margin-bottom:5px;">Subject</label>
+      <input type="text" id="shareSubject" class="pf-input" value="Check out my Portfolio!" required style="margin-bottom:10px;">
+      <label style="font-size:.78rem;color:#94a3b8;font-weight:600;display:block;margin-bottom:5px;">Message</label>
+      <textarea id="shareMessage" class="pf-input" rows="4" style="margin-bottom:14px;">Hi! I built my portfolio using WorkFolio. Please take a look!</textarea>
+      <button type="submit" class="pf-btn pf-btn-primary" style="width:100%;padding:12px;justify-content:center;"><i class="fas fa-paper-plane"></i> Send</button>
+    </form>
+  </div>
+</div>
+
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<script src="portfolio.js"></script>
+<script>
+// ── EXTRA UI HELPERS ───────────────────────
+window.openCmdPalette = function() {
+  document.getElementById('cmdPalette').classList.add('open');
+  setTimeout(()=>document.querySelector('#cmdPalette input')?.focus(),100);
+};
+window.openShareModal = function() {
+  document.getElementById('cmdPalette').classList.remove('open');
+  document.getElementById('shareModal').classList.add('open');
+};
+// Override deploy to use new modal class
+const _origDeploy = window.startDeployment;
+window.startDeployment = function() {
+  document.getElementById('cmdPalette').classList.remove('open');
+  const modal   = document.getElementById('deployModal');
+  const loader  = document.getElementById('deployLoader');
+  const success = document.getElementById('deploySuccess');
+  const logs    = document.getElementById('deployLogs');
+  const link    = document.getElementById('deployLinkTxt');
+  modal.classList.add('open');
+  loader.style.display='block'; success.style.display='none';
+  const seq = ['> Resolving dependencies...','> Compiling Tailwind CSS...','> Bundling assets...','> Generating static output...','> Pushing to edge nodes...','> Finalizing...'];
+  logs.innerHTML='> Initializing build...<br>';
+  let i=0; const iv=setInterval(()=>{
+    if(i<seq.length){logs.innerHTML+=seq[i]+'<br>';logs.scrollTop=logs.scrollHeight;i++;}
+    else{clearInterval(iv);setTimeout(()=>{loader.style.display='none';success.style.display='block';
+      const slug=(siteData.name||'portfolio').toLowerCase().replace(/\s+/g,'-');
+      link.innerHTML=`https://${slug}.workfolio.app`;},500);}
+  },600);
+};
+// Chip handler
+window.sendChip = function(text) {
+  document.getElementById('aiInput').value = text;
+  sendAI();
+};
+// Override save status
+const _origSave2 = window.saveProject;
+window.saveProject = function(){
+  _origSave2 && _origSave2();
+  const s=document.getElementById('saveStatus');
+  if(s){s.style.opacity='1';setTimeout(()=>s.style.opacity='0',2500);}
+};
+// Keyboard shortcut for command palette
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openCmdPalette();}
+});
+</script>
 </body>
 </html>
