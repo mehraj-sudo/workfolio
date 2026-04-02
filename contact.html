@@ -4,163 +4,199 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us | WorkFolio</title>
+    <meta name="description" content="Get in touch with the WorkFolio team. We respond within 24 hours.">
+    <link rel="icon" type="image/png" href="1775117704121_logo.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .field-wrap { margin-bottom:20px; }
+        .field-wrap label { font-weight:600; color:#1e293b; display:block; margin-bottom:8px; font-size:0.95rem; }
+        .field-wrap input, .field-wrap textarea {
+            width:100%; padding:15px; border:1.5px solid rgba(139,92,246,0.3);
+            background:rgba(255,255,255,0.9); border-radius:12px; font-size:1rem;
+            outline:none; transition:0.3s; color:#334155; font-family:inherit;
+        }
+        .field-wrap input:focus, .field-wrap textarea:focus {
+            border-color:#a855f7; box-shadow:0 0 0 4px rgba(168,85,247,0.12); background:white;
+        }
+        .field-wrap.error input, .field-wrap.error textarea { border-color:#ef4444; }
+        .field-error { color:#ef4444; font-size:0.82rem; margin-top:5px; display:none; }
+        .char-counter { font-size:0.8rem; color:#94a3b8; text-align:right; margin-top:4px; }
+        [data-theme="dark"] .field-wrap label { color:#e2e8f0; }
+        [data-theme="dark"] .field-wrap input, [data-theme="dark"] .field-wrap textarea { background:rgba(30,41,59,0.8); color:#e2e8f0; border-color:rgba(139,92,246,0.3); }
+    </style>
 </head>
 <body>
-
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
 
-    <nav class="navbar" style="position: relative; z-index: 10;">
-        <a href="index.html" class="logo" style="font-size: 1.5rem;">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <div class="logo-text" style="font-size: 1.5rem;">Contact Support</div>
-        <i class="fas fa-headset fa-2x"></i>
+    <nav class="navbar" style="position:relative;z-index:10;">
+        <a href="index.html" class="logo" style="font-size:1.5rem;"><i class="fas fa-arrow-left"></i></a>
+        <div class="logo-text" style="font-size:1.5rem;font-weight:700;">Contact Support</div>
+        <i class="fas fa-headset fa-2x" style="color:var(--primary);"></i>
     </nav>
 
-    <div class="page-container section-padding" style="position: relative; z-index: 10; background: transparent; box-shadow: none; padding-top: 20px;">
-        
-        <div class="page-header" style="margin-bottom: 40px; text-align: center;">
-            <h1 style="font-size: 3rem; margin-bottom: 10px; color: var(--text-dark); font-weight: 800;">Get in <span class="text-gradient">Touch</span>.</h1>
-            <p style="color: #64748b; font-size: 1.1rem;">Fill out the form below and our team will get back to you.</p>
+    <div class="page-container section-padding" style="position:relative;z-index:10;background:transparent;box-shadow:none;padding-top:20px;">
+
+        <div class="page-header" style="margin-bottom:40px;text-align:center;">
+            <h1 style="font-size:3rem;margin-bottom:10px;color:var(--text-dark);font-weight:800;">Get in <span class="text-gradient">Touch</span>.</h1>
+            <p style="color:#64748b;font-size:1.1rem;">Fill out the form and our team will respond within 24 hours.</p>
         </div>
 
-        <div class="contact-card glass-panel" style="background: rgba(255, 255, 255, 0.65); max-width: 700px; margin: 0 auto 60px; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.8);">
-            
-            <form class="contact-form" id="contactForm" onsubmit="sendEmail(event)">
-                
+        <div class="contact-card glass-panel" style="max-width:700px;margin:0 auto 60px;padding:40px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+
+            <form id="contactForm" onsubmit="sendEmail(event)" novalidate>
                 <input type="hidden" name="access_key" value="f33d1bd1-2480-4a4d-b626-41257b1341fa">
-                
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label style="font-weight: 600; color: #1e293b; display: block; margin-bottom: 8px;">Full Name</label>
-                    <input type="text" name="name" placeholder="John Doe" required style="width: 100%; padding: 15px; border: 1px solid rgba(139, 92, 246, 0.4); background: rgba(255, 255, 255, 0.9); border-radius: 12px; font-size: 1rem; outline: none; transition: 0.3s; color: #334155;">
+
+                <div class="field-wrap" id="wrap-name">
+                    <label>Full Name</label>
+                    <input type="text" name="name" id="inp-name" placeholder="John Doe" required maxlength="80">
+                    <div class="field-error" id="err-name">Please enter your full name.</div>
                 </div>
-                
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label style="font-weight: 600; color: #1e293b; display: block; margin-bottom: 8px;">Email Address</label>
-                    <input type="email" name="email" placeholder="john@example.com" required style="width: 100%; padding: 15px; border: 1px solid rgba(139, 92, 246, 0.4); background: rgba(255, 255, 255, 0.9); border-radius: 12px; font-size: 1rem; outline: none; color: #334155;">
+
+                <div class="field-wrap" id="wrap-email">
+                    <label>Email Address</label>
+                    <input type="email" name="email" id="inp-email" placeholder="john@example.com" required>
+                    <div class="field-error" id="err-email">Please enter a valid email address.</div>
                 </div>
-                
-                <div class="form-group" style="margin-bottom: 30px;">
-                    <label style="font-weight: 600; color: #1e293b; display: block; margin-bottom: 8px;">Message</label>
-                    <textarea name="message" rows="5" placeholder="How can we help you?" required style="width: 100%; padding: 15px; border: 1px solid rgba(139, 92, 246, 0.4); background: rgba(255, 255, 255, 0.9); border-radius: 12px; font-size: 1rem; outline: none; font-family: inherit; resize: vertical; color: #334155;"></textarea>
+
+                <div class="field-wrap" id="wrap-subject">
+                    <label>Subject</label>
+                    <input type="text" name="subject" id="inp-subject" placeholder="e.g. Bug report, Feature request..." required maxlength="120">
+                    <div class="field-error" id="err-subject">Please enter a subject.</div>
                 </div>
-                
-                <button type="submit" id="submitBtn" class="btn-gradient" style="width: 100%; padding: 15px; font-size: 1.1rem; border-radius: 12px; border: none; cursor: pointer; color: white; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3); font-weight: 600;">
-                    <i class="fas fa-paper-plane" style="margin-right: 8px;"></i> Send Message
+
+                <div class="field-wrap" id="wrap-msg">
+                    <label>Message</label>
+                    <textarea name="message" id="inp-msg" rows="5" placeholder="Describe your issue or question in detail..." required maxlength="2000" oninput="updateCounter()"></textarea>
+                    <div style="display:flex;justify-content:space-between;">
+                        <div class="field-error" id="err-msg">Please enter a message (at least 20 characters).</div>
+                        <div class="char-counter"><span id="charCount">0</span>/2000</div>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-gradient" style="width:100%;padding:15px;font-size:1.1rem;border-radius:12px;border:none;cursor:pointer;color:white;box-shadow:0 10px 20px rgba(79,70,229,0.3);font-weight:600;">
+                    <i class="fas fa-paper-plane" style="margin-right:8px;"></i> Send Message
                 </button>
-                
-                <div id="result" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
+
+                <div id="result" style="text-align:center;margin-top:15px;font-weight:600;font-size:0.95rem;"></div>
             </form>
         </div>
 
-       <div class="info-bar" style="max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; padding: 0 15px;">
-            
-            <div class="info-card glass-panel" style="background: rgba(255, 255, 255, 0.65); padding: 20px 30px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.8); flex: 1; min-width: 250px;">
-                <div class="icon-circle" style="width: 50px; height: 50px; min-width: 50px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 1.2rem;">
+        <!-- Contact Info Cards -->
+        <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:20px;padding:0 15px;">
+            <div class="glass-panel" style="padding:20px 25px;border-radius:15px;display:flex;align-items:center;gap:15px;flex:1;min-width:230px;max-width:280px;">
+                <div style="width:48px;height:48px;min-width:48px;background:rgba(59,130,246,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#3b82f6;font-size:1.2rem;">
                     <i class="fas fa-envelope"></i>
                 </div>
                 <div>
-                    <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 4px 0; text-transform: uppercase; font-weight: bold;">Email Us</p>
-                    <strong style="color: #1e293b; font-size: 1rem; word-break: break-word;">support@workfolio.com</strong>
+                    <p style="font-size:0.75rem;color:#64748b;margin:0 0 4px;text-transform:uppercase;font-weight:700;">Email</p>
+                    <strong style="color:#1e293b;font-size:0.95rem;">support@workfolio.com</strong>
                 </div>
             </div>
-
-            <div class="info-card glass-panel" style="background: rgba(255, 255, 255, 0.65); padding: 20px 30px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.8); flex: 1; min-width: 250px;">
-                <div class="icon-circle" style="width: 50px; height: 50px; min-width: 50px; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 1.2rem;">
-                    <i class="fas fa-phone-alt"></i>
+            <div class="glass-panel" style="padding:20px 25px;border-radius:15px;display:flex;align-items:center;gap:15px;flex:1;min-width:230px;max-width:280px;">
+                <div style="width:48px;height:48px;min-width:48px;background:rgba(16,185,129,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#10b981;font-size:1.2rem;">
+                    <i class="fas fa-clock"></i>
                 </div>
                 <div>
-                    <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 4px 0; text-transform: uppercase; font-weight: bold;">Call Us</p>
-                    <strong style="color: #1e293b; font-size: 0.95rem;">+91 8008083932 <br> +91 9182266004</strong>
+                    <p style="font-size:0.75rem;color:#64748b;margin:0 0 4px;text-transform:uppercase;font-weight:700;">Response Time</p>
+                    <strong style="color:#1e293b;font-size:0.95rem;">Within 24 hours</strong>
                 </div>
             </div>
-
-            <div class="info-card glass-panel" style="background: rgba(255, 255, 255, 0.65); padding: 20px 30px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.8); flex: 1; min-width: 250px;">
-                <div class="icon-circle" style="width: 50px; height: 50px; min-width: 50px; background: rgba(168, 85, 247, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #a855f7; font-size: 1.2rem;">
+            <div class="glass-panel" style="padding:20px 25px;border-radius:15px;display:flex;align-items:center;gap:15px;flex:1;min-width:230px;max-width:280px;">
+                <div style="width:48px;height:48px;min-width:48px;background:rgba(168,85,247,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#a855f7;font-size:1.2rem;">
                     <i class="fas fa-map-marker-alt"></i>
                 </div>
                 <div>
-                    <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 4px 0; text-transform: uppercase; font-weight: bold;">Location</p>
-                    <strong style="color: #1e293b; font-size: 0.95rem;">Main City, White Town,<br>Puducherry, 605001</strong>
+                    <p style="font-size:0.75rem;color:#64748b;margin:0 0 4px;text-transform:uppercase;font-weight:700;">Location</p>
+                    <strong style="color:#1e293b;font-size:0.95rem;">Puducherry, India</strong>
                 </div>
             </div>
-
         </div>
     </div>
-    
-    <footer class="dashboard-footer" style="margin-top: 60px; position: relative; z-index: 10;">
-        <p class="copyright" style="color: #64748b;">&copy; 2026 WorkFolio Suite. All rights reserved.</p>
-    </footer>
-    
-    <script src="auth.js"></script>
 
+    <footer class="dashboard-footer" style="margin-top:60px;z-index:10;position:relative;">
+        <p class="copyright" style="color:#64748b;">&copy; 2026 WorkFolio Suite. All rights reserved.</p>
+    </footer>
+
+    <script src="auth.js"></script>
     <script>
-        function sendEmail(e) {
-            e.preventDefault(); 
-            
-            const form = document.getElementById('contactForm');
-            const result = document.getElementById('result');
+        function updateCounter() {
+            document.getElementById('charCount').innerText = document.getElementById('inp-msg').value.length;
+        }
+
+        function validate() {
+            let ok = true;
+            const fields = [
+                { id: 'name',  errId: 'err-name',  wrapId: 'wrap-name',  check: v => v.trim().length >= 2 },
+                { id: 'email', errId: 'err-email', wrapId: 'wrap-email', check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+                { id: 'subject', errId: 'err-subject', wrapId: 'wrap-subject', check: v => v.trim().length >= 3 },
+                { id: 'msg',   errId: 'err-msg',   wrapId: 'wrap-msg',   check: v => v.trim().length >= 20 },
+            ];
+            fields.forEach(f => {
+                const input = document.getElementById('inp-' + f.id);
+                const err   = document.getElementById(f.errId);
+                const wrap  = document.getElementById(f.wrapId);
+                const valid = f.check(input.value);
+                err.style.display  = valid ? 'none' : 'block';
+                wrap.classList.toggle('error', !valid);
+                if (!valid) ok = false;
+            });
+            return ok;
+        }
+
+        async function sendEmail(e) {
+            e.preventDefault();
+            if (!validate()) return;
+
+            const form      = document.getElementById('contactForm');
+            const result    = document.getElementById('result');
             const submitBtn = document.getElementById('submitBtn');
 
-            // Save to your local Admin Panel
+            // Save locally
             try {
-                const name = document.querySelector('input[name="name"]').value;
-                const email = document.querySelector('input[name="email"]').value;
-                const msg = document.querySelector('textarea[name="message"]').value;
-                if(typeof saveMessage === 'function') {
-                    saveMessage(name, email, msg);
+                if (typeof saveMessage === 'function') {
+                    saveMessage(
+                        document.getElementById('inp-name').value,
+                        document.getElementById('inp-email').value,
+                        document.getElementById('inp-msg').value
+                    );
                 }
-            } catch(err) { console.log("Local save skipped."); }
+            } catch (err) {}
 
-            // Prepare data for Web3Forms
+            result.innerHTML = '⏳ Sending your message...';
+            result.style.color = '#64748b';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            submitBtn.disabled  = true;
+
             const formData = new FormData(form);
-            const object = Object.fromEntries(formData);
-            const json = JSON.stringify(object);
+            const payload  = JSON.stringify(Object.fromEntries(formData));
 
-            result.innerHTML = "Sending...";
-            result.style.color = "#64748b";
-            submitBtn.innerHTML = "<i class='fas fa-spinner fa-spin' style='margin-right: 8px;'></i> Sending...";
-
-            // Send the actual email
-            fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: json
-            })
-            .then(async (response) => {
-                let jsonResult = await response.json();
-                if (response.status == 200) {
-                    result.innerHTML = "Message Sent Successfully!";
-                    result.style.color = "#10b981"; // Success green
-                    submitBtn.innerHTML = "<i class='fas fa-check' style='margin-right: 8px;'></i> Sent";
-                    form.reset(); 
-                    
-                    // Reset button after 3 seconds
-                    setTimeout(() => {
-                        submitBtn.innerHTML = "<i class='fas fa-paper-plane' style='margin-right: 8px;'></i> Send Message";
-                        result.innerHTML = "";
-                    }, 3000);
+            try {
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: payload
+                });
+                const json = await response.json();
+                if (response.status === 200) {
+                    result.innerHTML = '✅ Message sent! We\'ll reply within 24 hours.';
+                    result.style.color = '#10b981';
+                    form.reset();
+                    document.getElementById('charCount').innerText = '0';
+                    setTimeout(() => { result.innerHTML = ''; }, 5000);
                 } else {
-                    console.log(response);
-                    result.innerHTML = jsonResult.message;
-                    result.style.color = "#ef4444"; // Error red
-                    submitBtn.innerHTML = "<i class='fas fa-paper-plane' style='margin-right: 8px;'></i> Send Message";
+                    result.innerHTML = '❌ ' + (json.message || 'Something went wrong.');
+                    result.style.color = '#ef4444';
                 }
-            })
-            .catch(error => {
-                console.log(error);
-                result.innerHTML = "Something went wrong! Please try again.";
-                result.style.color = "#ef4444";
-                submitBtn.innerHTML = "<i class='fas fa-paper-plane' style='margin-right: 8px;'></i> Send Message";
-            });
+            } catch (err) {
+                result.innerHTML = '❌ Network error. Please try again.';
+                result.style.color = '#ef4444';
+            } finally {
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane" style="margin-right:8px;"></i> Send Message';
+                submitBtn.disabled  = false;
+            }
         }
     </script>
-
 </body>
 </html>
