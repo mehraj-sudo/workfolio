@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Data | WorkFolio</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="auth.js"></script>
+    <style>
+        .admin-wrapper { max-width: 1000px; margin: 50px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        h2 { margin-top: 40px; margin-bottom: 15px; color: var(--dark); font-size: 1.5rem; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border: 1px solid #eee; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8fafc; color: #333; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; }
+        tr:hover { background: #f1f5f9; }
+        
+        .empty-msg { color: #888; text-align: center; padding: 20px; font-style: italic; }
+        .btn-download { background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-download:hover { background: #059669; }
+
+        /* Badge for User Count */
+        .count-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; vertical-align: middle; margin-left: 10px; }
+    </style>
+</head>
+<body style="background: #f1f5f9;">
+
+    <nav class="navbar">
+        <a href="index.html" class="logo" style="font-size: 1.8rem;">←</a>
+        <div class="logo-text" style="font-size: 1.2rem; font-weight: bold;">Admin Panel</div>
+    </nav>
+
+    <div class="admin-wrapper">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h1>Database Records</h1>
+            <button class="btn-download" onclick="downloadData()">Download Full Database</button>
+        </div>
+
+        <h2><i class="fas fa-envelope"></i> Contact Messages <span id="msgCount" class="count-badge">0</span></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody id="messageTable">
+                </tbody>
+        </table>
+
+        <h2><i class="fas fa-users"></i> Registered Users <span id="userCount" class="count-badge">0</span></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Joined Date</th>
+                    <th>Username</th>
+                    <th>Contact (Email/Phone)</th>
+                    <th>Password</th>
+                </tr>
+            </thead>
+            <tbody id="userTable">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        // === 1. LOAD MESSAGES ===
+        // We check 'workfolio_messages' (new) and 'career_master_messages' (old backup)
+        const rawMsgs = localStorage.getItem('workfolio_messages') || localStorage.getItem('career_master_messages');
+        const messages = JSON.parse(rawMsgs) || [];
+        
+        document.getElementById('msgCount').innerText = messages.length;
+        const msgBody = document.getElementById('messageTable');
+
+        if (messages.length === 0) {
+            msgBody.innerHTML = '<tr><td colspan="4" class="empty-msg">No messages found.</td></tr>';
+        } else {
+            messages.reverse().forEach(msg => {
+                const date = msg.date || new Date(msg.id).toLocaleString();
+                msgBody.innerHTML += `
+                    <tr>
+                        <td style="font-size:0.85rem; color:#666;">${date}</td>
+                        <td><strong>${msg.name}</strong></td>
+                        <td>${msg.email}</td>
+                        <td>${msg.text || msg.message}</td>
+                    </tr>`;
+            });
+        }
+
+        // === 2. LOAD USERS ===
+        // We check 'workfolio_users' (new) and 'career_master_users' (old backup)
+        const rawUsers = localStorage.getItem('workfolio_users') || localStorage.getItem('career_master_users');
+        const users = JSON.parse(rawUsers) || [];
+
+        document.getElementById('userCount').innerText = users.length;
+        const userBody = document.getElementById('userTable');
+
+        if (users.length === 0) {
+            userBody.innerHTML = '<tr><td colspan="4" class="empty-msg">No users registered yet.</td></tr>';
+        } else {
+            users.reverse().forEach(u => {
+                // If 'joined' date is missing, show 'N/A'
+                const joined = u.joined || "N/A";
+                userBody.innerHTML += `
+                    <tr>
+                        <td style="font-size:0.85rem; color:#666;">${joined}</td>
+                        <td><strong>${u.username}</strong></td>
+                        <td>${u.contact || u.email}</td>
+                        <td style="font-family:monospace; color:#ef4444;">${u.password}</td> 
+                    </tr>`;
+            });
+        }
+
+        // === 3. DOWNLOAD ALL DATA ===
+        function downloadData() {
+            const fullData = {
+                users: users,
+                messages: messages
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullData, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "workfolio_full_database.json");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+    </script>
+
+</body>
+</html>

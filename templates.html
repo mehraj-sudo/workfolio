@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Templates Library | WorkFolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="bg-circles">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">Work<span class="highlight">Folio</span></a>
+        
+        <div class="menu-toggle" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="nav-menu" id="sideMenu">
+            <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="templates.html"><i class="fas fa-layer-group"></i> Templates</a>
+            <a href="resume.html"><i class="fas fa-file-alt"></i> Resume Builder</a>
+            <a href="portfolio.html"><i class="fas fa-laptop"></i> Portfolio Maker</a>
+            <a href="ats.html"><i class="fas fa-search"></i> ATS Scanner</a>
+            <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <div class="template-header">
+        <h1>Explore <span class="highlight">60+ Templates</span></h1>
+        <p>Expertly designed layouts to help you land your dream role.</p>
+        
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterTemplates('all', this)">All Templates</button>
+            <button class="filter-btn" onclick="filterTemplates('resume', this)">Resumes</button>
+            <button class="filter-btn" onclick="filterTemplates('portfolio', this)">Portfolios</button>
+        </div>
+    </div>
+
+    <div class="template-grid" id="templateContainer">
+        </div>
+
+    <div id="toast">
+        <div class="toast-icon"><i class="fas fa-check"></i></div>
+        <div>
+            <h4 style="margin:0; font-family:var(--heading-font);">Template Selected!</h4>
+            <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Opening the builder...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Ensure the grid renders immediately when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof renderTemplates === 'function') {
+                renderTemplates('all');
+            }
+        });
+    </script>
+</body>
+</html>

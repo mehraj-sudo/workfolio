@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | WorkFolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="auth.js"></script>
+</head>
+<body>
+
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <nav class="glass-nav" style="position: absolute; top: 20px; width: 650px; padding: 10px 25px;">
+        <a href="index.html" class="logo" style="font-size: 1.2rem;">
+            <i class="fas fa-arrow-left" style="color: var(--primary);"></i>
+            <span>Back to Home</span>
+        </a>
+    </nav>
+
+    <div class="auth-wrapper">
+        <div class="glass-panel auth-box">
+            
+            <div class="auth-header">
+                <h2>Welcome <span class="text-gradient">Back</span></h2>
+                <p style="color: var(--text-light);">Sign in to continue to WorkFolio.</p>
+            </div>
+
+            <form id="loginForm" onsubmit="processLogin(event)">
+                
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="loginId" placeholder="Username or Phone" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <i class="fas fa-eye" id="toggleEye" onclick="togglePasswordVisibility()" style="position: absolute; right: 20px; left: auto; z-index: 10; cursor: pointer; color: var(--text-light);"></i>
+                </div>
+
+                <div style="text-align: right; margin-top: -10px; margin-bottom: 20px;">
+                    <a href="#" onclick="alert('Since this is a front-end demo, password resets via email are simulated! \n\nTip: Just create a new account if you forgot your details.')" style="font-size: 0.85rem; color: var(--primary); font-weight: 600; text-decoration: none;">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="btn-gradient" style="width: 100%; border: none; padding: 15px; border-radius: 16px; font-size: 1.1rem; cursor: pointer;">Sign In</button>
+                
+            </form>
+
+            <div class="toggle-text">
+                New to WorkFolio? <span onclick="window.location.href='register.html'">Create an account</span>
+            </div>
+            
+        </div>
+    </div>
+
+</body>
+</html>

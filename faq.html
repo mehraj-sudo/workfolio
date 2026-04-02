@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ | WorkFolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Professional Centered Accordion */
+        details {
+            background: white;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-align: center; /* Forces everything to center */
+        }
+        
+        details:hover {
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+
+        details[open] {
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
+        }
+
+        summary {
+            padding: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark);
+            list-style: none;
+            display: flex;
+            justify-content: center; /* Center the question text */
+            align-items: center;
+            font-size: 1.05rem;
+            position: relative;
+        }
+
+        summary::-webkit-details-marker { display: none; }
+
+        /* Arrow Icon - Positioned absolute to stay consistent while text centers */
+        summary::after {
+            content: '\f078'; 
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 0.9rem;
+            color: #999;
+            position: absolute;
+            right: 20px; /* Keep arrow on the right for clean look */
+            transition: transform 0.3s ease;
+        }
+
+        details[open] summary::after {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+
+        .faq-answer {
+            padding: 5px 40px 30px; /* More padding for centered text reading */
+            color: #555;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            border-top: 1px solid #f0f0f0;
+            max-width: 90%;
+            margin: 0 auto; /* Center the block itself */
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="logo" style="font-size: 1.5rem;">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="logo-text" style="font-size: 1.5rem;">Help Center</div>
+        <i class="fas fa-question-circle"></i>
+    </nav>
+
+    <div class="page-container" style="background: rgba(255, 255, 255, 0); backdrop-filter: blur(10px); max-width: 800px; padding: 50px; margin: 50px auto; text-align: center;">
+        
+        <div class="page-header" style="margin-bottom: 40px;">
+            <h1 style="font-family: 'Montserrat', sans-serif; color: var(--dark); margin-bottom: 10px;">Frequently Asked Questions</h1>
+            <p style="color: #666; max-width: 600px; margin: 0 auto;">Everything you need to know about building your career with WorkFolio.</p>
+        </div>
+
+        <details>
+            <summary>Is WorkFolio completely free?</summary>
+            <div class="faq-answer">
+                Yes! WorkFolio is currently 100% free. You can create unlimited resumes, build your portfolio, and use the ATS scanner without any hidden charges or subscription fees.
+            </div>
+        </details>
+
+        <details>
+            <summary>How does the ATS Scanner work?</summary>
+            <div class="faq-answer">
+                Our scanner compares the text in your resume against a specific job description you provide. It identifies missing keywords and calculates a "Match Score" to help you optimize your application for automated hiring systems.
+            </div>
+        </details>
+
+        <details>
+            <summary>Is my personal data safe?</summary>
+            <div class="faq-answer">
+                We take privacy seriously. By default, your data is stored locally in your browser (Local Storage). Even if you register, we never share your personal information with third-party advertisers.
+            </div>
+        </details>
+
+        <details>
+            <summary>Can I edit my resume after downloading?</summary>
+            <div class="faq-answer">
+                PDFs are final documents. To make changes, simply open the WorkFolio editor again, update your information, and download a fresh PDF. Your data is saved automatically in the editor.
+            </div>
+        </details>
+
+        <details>
+            <summary>Can I use this on my mobile phone?</summary>
+            <div class="faq-answer">
+                Absolutely. WorkFolio is fully responsive. You can build resumes, update your portfolio, and check your ATS score directly from your smartphone or tablet.
+            </div>
+        </details>
+
+        <details>
+            <summary>What file formats are supported?</summary>
+            <div class="faq-answer">
+                We currently support high-quality *PDF* exports. PDF is the global industry standard for job applications because it preserves your formatting on every device.
+            </div>
+        </details>
+
+        <details>
+            <summary>Do I need an account to use it?</summary>
+            <div class="faq-answer">
+                No, you can use the tools as a Guest. However, creating an account is recommended so your data is backed up safely and accessible if you switch devices or clear your browser cache.
+            </div>
+        </details>
+
+        <details>
+            <summary>What is a Portfolio Website?</summary>
+            <div class="faq-answer">
+                Unlike a standard resume, a Portfolio Website is a digital showcase. It allows you to display project images, detailed case studies, and code snippets to prove your skills visually to recruiters.
+            </div>
+        </details>
+
+        <details>
+            <summary>Can I upload my existing resume?</summary>
+            <div class="faq-answer">
+                We currently do not support file uploads. We recommend copying and pasting your details into our builder. This ensures your data is structured correctly for the highest possible ATS compatibility.
+            </div>
+        </details>
+
+        <details>
+            <summary>How do I contact support?</summary>
+            <div class="faq-answer">
+                If you have specific issues, you can reach us via the "Contact Us" page on the dashboard. We typically respond to queries within 24 hours.
+            </div>
+        </details>
+
+    </div>
+    
+    <footer class="dashboard-footer" style="margin-top: 50px;">
+        <p class="copyright">&copy; 2026 WorkFolio Suite. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

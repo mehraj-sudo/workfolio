@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkFolio | Build Your Future</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="auth.js"></script>
+</head>
+<body>
+
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <nav class="glass-nav reveal-down">
+        <a href="index.html" class="logo">
+            <i class="fas fa-layer-group" style="color: var(--primary);"></i>
+            <span>WorkFolio</span>
+        </a>
+        
+        <div class="menu-toggle" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <div class="nav-links" id="navMenu">
+            <a href="#home" onclick="toggleMenu()">Home</a>
+            <a href="#features" onclick="toggleMenu()">Features</a>
+            <a href="#about" onclick="toggleMenu()">About</a>
+            <a href="#faq" onclick="toggleMenu()">FAQ</a>
+            
+            <div class="menu-auth">
+                <span class="userDisplay" style="margin-bottom: 10px; font-weight: 600; color: var(--text-dark);"></span>
+                
+                <a href="login.html" class="authBtn btn-text" style="margin-bottom: 15px;">Sign In</a>
+                
+                <a href="#" onclick="logout(event)" class="logoutBtn btn-text" style="margin-bottom: 15px; display: none; color: var(--secondary);">Logout</a>
+                
+                <a href="#" onclick="checkAccess(event, 'resume.html')" class="btn-gradient">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero reveal">
+        <div class="floating-icon float-fast" style="top: 15%; left: 10%;"><i class="fas fa-id-badge" style="color: #3b82f6;"></i></div>
+        <div class="floating-icon float-slow" style="top: 20%; right: 15%;"><i class="fas fa-medal" style="color: #8b5cf6;"></i></div>
+        <div class="floating-icon float-medium" style="bottom: 20%; left: 15%;"><i class="fas fa-check-circle" style="color: #10b981;"></i></div>
+        
+        <div class="hero-content glass-panel">
+            <h1>Build Your<br>Future <span class="text-gradient">Today</span></h1>
+            <p>Create your digital presence with sleek tools. Ensure your portfolio, skills, and resume stand out to the global companies you want to join.</p>
+            
+            <div class="button-group">
+                <a href="#" onclick="checkAccess(event, 'resume.html')" class="btn-gradient btn-lg">Create Free Resume</a>
+                <a href="#" onclick="checkAccess(event, 'portfolio.html')" class="btn-outline btn-lg">Explore Portfolios</a>
+                <a href="#" onclick="checkAccess(event, 'ats.html')" class="btn-outline btn-lg"><i class="fas fa-bullseye" style="margin-right: 8px;"></i> ATS Score</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="section-padding">
+        <div class="section-title reveal">
+            <h2>Features</h2>
+        </div>
+        
+        <div class="features-grid reveal">
+            <div class="glass-card">
+                <div class="icon-wrapper" style="background: linear-gradient(135deg, #fbc2eb, #a6c1ee);"><i class="fas fa-file-alt text-white"></i></div>
+                <h3>Resume Builder</h3>
+                <p>Build professional, ATS-friendly resumes in minutes using our intuitive, Canva-style editor.</p>
+            </div>
+            
+            <div class="glass-card glowing-card">
+                <div class="icon-wrapper" style="background: linear-gradient(135deg, #8ec5fc, #e0c3fc);"><i class="fas fa-laptop-code text-white"></i></div>
+                <h3>Portfolio Maker</h3>
+                <p>Design a stunning personal website to showcase your projects, case studies, and achievements.</p>
+            </div>
+            
+            <div class="glass-card">
+                <div class="icon-wrapper" style="background: linear-gradient(135deg, #a18cd1, #fbc2eb);"><i class="fas fa-bullseye text-white"></i></div>
+                <h3>ATS Scanner</h3>
+                <p>Analyze your resume against job descriptions to ensure you pass automated hiring bots.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="section-padding reveal">
+        <div class="about-grid glass-panel">
+            <div class="about-text">
+                <h2>About Us</h2>
+                <p>WorkFolio is your ultimate career acceleration platform. We provide powerful, beautifully designed tools to help you craft the perfect application and showcase your work to the world.</p>
+                <p>Whether you are a seasoned professional or just starting out, our platform adapts to your needs, making career building a seamless experience.</p>
+            </div>
+            <div class="about-visual">
+                <div class="about-visual">
+                <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Rocket.png" alt="3D Rocket" style="width: 100%; max-width: 400px; filter: drop-shadow(0 20px 30px rgba(79, 70, 229, 0.3));">
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="section-padding reveal">
+        <div class="section-title">
+            <h2>FAQ</h2>
+        </div>
+        
+        <div class="faq-container glass-panel">
+            <details>
+                <summary>Is WorkFolio completely free to use?</summary>
+                <div class="faq-content">Yes! All core features including the Resume Builder, Portfolio Maker, and ATS Scanner are 100% free with no hidden charges.</div>
+            </details>
+            <details>
+                <summary>How does the ATS Scanner work?</summary>
+                <div class="faq-content">It compares your resume text against a job description, calculating a keyword match score to help you optimize for automated hiring systems.</div>
+            </details>
+            <details>
+                <summary>Is my data saved online?</summary>
+                <div class="faq-content">By default, your data is securely stored locally in your browser. It is never shared with third-party advertisers.</div>
+            </details>
+            <details>
+                <summary>Can I edit my resume after downloading?</summary>
+                <div class="faq-content">Yes, simply open the Resume Builder again. Your previous data will be there, allowing you to edit and re-download.</div>
+            </details>
+        </div>
+    </section>
+
+    <footer class="glass-footer">
+        <div class="footer-content">
+            <div class="logo">
+                <i class="fas fa-layer-group" style="color: var(--primary);"></i> 
+                <span>WorkFolio</span>
+            </div>
+            <div class="footer-links">
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+                <a href="#faq">FAQ</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="copyright">&copy; 2026 WorkFolio. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

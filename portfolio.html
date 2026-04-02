@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Portfolio Studio | WorkFolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="saas-editor-body">
+
+    <div id="view-dashboard" style="display: block; width: 100%; height: 100%; overflow-y: auto;">
+        <nav class="saas-nav">
+            <div class="nav-brand"><i class="fas fa-cube" style="color: #a855f7;"></i> Studio<b>AI</b></div>
+            <div class="nav-actions">
+                <a href="resume.html" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'"><i class="fas fa-file-alt"></i> Go to Resume Studio</a>
+            </div>
+        </nav>
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <div>
+                    <h1 style="margin: 0 0 10px 0; font-size: 2.5rem;">My Portfolios</h1>
+                    <p style="margin: 0; color: #94a3b8;">Manage, edit, and deploy your web projects.</p>
+                </div>
+                <button class="btn-primary" onclick="createNewProject()" style="padding: 12px 24px; font-size: 1rem;"><i class="fas fa-plus"></i> New Project</button>
+            </div>
+            <div class="project-grid" id="dashboardGrid"></div>
+        </div>
+    </div>
+
+    <div id="view-editor" style="display: none; height: 100vh; flex-direction: column;">
+        <nav class="saas-nav">
+            <div class="nav-brand" style="cursor: pointer; transition: color 0.2s;" onclick="switchView('view-dashboard')" onmouseover="this.style.color='#a855f7'" onmouseout="this.style.color='#fff'">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </div>
+            <div class="nav-center">
+                <button class="nav-tab active">Design</button>
+                <button class="nav-tab" onclick="document.getElementById('cmdPalette').classList.add('active')">⌘ K Command</button>
+            </div>
+            <div class="nav-actions">
+                <span id="saveStatus" style="color: #94a3b8; font-size: 0.8rem; margin-right: 15px;"></span>
+                <button class="btn-ghost" onclick="saveProject()"><i class="fas fa-save"></i> Save</button>
+                <button class="btn-primary" onclick="startDeployment()"><i class="fas fa-rocket"></i> Deploy</button>
+            </div>
+        </nav>
+
+        <div class="workspace">
+            <aside class="sidebar-left">
+                <div class="sidebar-header">Design Controls</div>
+                <div class="prop-group">
+                    <label>Architecture Pattern</label>
+                    <select id="templateSelect" class="prop-input" onchange="switchLayout(this.value)" style="cursor: pointer; font-weight: 600; color: #a855f7;"></select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <div class="prop-group" style="margin: 0;">
+                        <label>Color Mode</label>
+                        <select id="themeSelect" class="prop-input" onchange="updateData('theme', this.value)" style="cursor: pointer;">
+                            <option value="dark">Dark Mode</option>
+                            <option value="light">Light Mode</option>
+                        </select>
+                    </div>
+                    <div class="prop-group" style="margin: 0;">
+                        <label>Base Font</label>
+                        <select id="fontSelect" class="prop-input" onchange="updateData('font', this.value)" style="cursor: pointer;"></select>
+                    </div>
+                </div>
+
+                <div class="sidebar-header" style="margin-top: 10px;">AI Co-Pilot</div>
+                <div class="ai-chat-box" id="aiChat">
+                    <div class="ai-bubble bot">Hello! Pick a layout above, or tell me what to build. Try: <em>"Make it a dark bento grid"</em> or <em>"Assemble the Avengers"</em></div>
+                </div>
+                <div class="ai-input-wrapper">
+                    <input type="text" id="aiInput" placeholder="Generate or edit..." onkeypress="if(event.key==='Enter') sendAI()">
+                    <button onclick="sendAI()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </aside>
+
+            <main class="canvas-area">
+                <div class="canvas-toolbar">
+                    <div class="browser-dots"><span></span><span></span><span></span></div>
+                    <div class="url-bar">localhost:3000/preview <i class="fas fa-lock" style="font-size:10px; margin-left:8px; opacity:0.5;"></i></div>
+                    <div class="device-toggles">
+                        <button onclick="setViewport('100%')" title="Desktop View"><i class="fas fa-desktop"></i></button>
+                        <button onclick="setViewport('768px')" title="Tablet View"><i class="fas fa-tablet-alt"></i></button>
+                        <button onclick="setViewport('375px')" title="Mobile View"><i class="fas fa-mobile-alt"></i></button>
+                    </div>
+                </div>
+                <div class="iframe-container" id="iframeWrapper">
+                    <iframe id="livePreview" srcdoc="" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"></iframe>
+                </div>
+            </main>
+
+            <aside class="sidebar-right">
+                <div class="sidebar-header">Global Data</div>
+                
+                <div class="prop-group">
+                    <label>Profile Image</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img id="pPhotoPreview" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #334155;">
+                        <input type="file" id="pPhotoInput" accept="image/*" onchange="handlePhotoUpload(event)" style="font-size: 0.8rem; color: #94a3b8; flex-grow: 1; cursor: pointer;">
+                    </div>
+                </div>
+
+                <div class="prop-group"><label>Full Name</label><input type="text" id="pName" class="prop-input" oninput="updateData('name', this.value)"></div>
+                <div class="prop-group"><label>Headline</label><input type="text" id="pTitle" class="prop-input" oninput="updateData('title', this.value)"></div>
+                <div class="prop-group"><label>Bio Summary</label><textarea id="pAbout" class="prop-input" rows="3" oninput="updateData('about', this.value)"></textarea></div>
+
+                <div class="sidebar-header" style="margin-top: 20px;">Social Links</div>
+                <div class="prop-group"><label><i class="fas fa-envelope"></i> Email Address</label><input type="email" id="pEmail" class="prop-input" placeholder="hello@example.com" oninput="updateData('email', this.value)"></div>
+                <div class="prop-group"><label><i class="fab fa-linkedin"></i> LinkedIn URL</label><input type="text" id="pLinkedin" class="prop-input" placeholder="https://linkedin.com/in/..." oninput="updateData('linkedin', this.value)"></div>
+                <div class="prop-group"><label><i class="fab fa-github"></i> GitHub URL</label><input type="text" id="pGithub" class="prop-input" placeholder="https://github.com/..." oninput="updateData('github', this.value)"></div>
+
+                <div class="sidebar-header" style="margin-top: 20px; display:flex; justify-content:space-between;">Skills <button onclick="addListItem('skills')" class="btn-icon"><i class="fas fa-plus"></i></button></div>
+                <div id="skillsList" class="project-manager"></div>
+
+                <div class="sidebar-header" style="margin-top: 20px; display:flex; justify-content:space-between;">Experience <button onclick="addListItem('experience')" class="btn-icon"><i class="fas fa-plus"></i></button></div>
+                <div id="experienceList" class="project-manager"></div>
+
+                <div class="sidebar-header" style="margin-top: 20px; display:flex; justify-content:space-between;">Projects <button onclick="addListItem('projects')" class="btn-icon"><i class="fas fa-plus"></i></button></div>
+                <div id="projectsList" class="project-manager"></div>
+                
+                <div class="sidebar-header" style="margin-top: 20px; display:flex; justify-content:space-between;">Certifications <button onclick="addListItem('certs')" class="btn-icon"><i class="fas fa-plus"></i></button></div>
+                <div id="certsList" class="project-manager"></div>
+
+                <div class="sidebar-header" style="margin-top: 20px; color: #10b981;">Contact Me Section</div>
+                <div class="prop-group"><label><i class="fas fa-phone"></i> Phone Number</label><input type="text" id="pPhone" class="prop-input" placeholder="+1 234 567 890" oninput="updateData('phone', this.value)"></div>
+                <div class="prop-group"><label><i class="fas fa-map-marker-alt"></i> Location</label><input type="text" id="pLocation" class="prop-input" placeholder="City, Country" oninput="updateData('location', this.value)"></div>
+                <div class="prop-group"><label><i class="fas fa-paper-plane"></i> Contact Form Email</label><input type="email" id="pContactEmail" class="prop-input" placeholder="Receive messages at..." oninput="updateData('contactEmail', this.value)"></div>
+                <div style="height: 40px;"></div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="cmdPalette" class="modal-overlay" onclick="if(event.target===this) this.classList.remove('active')">
+        <div class="cmd-box">
+            <input type="text" placeholder="Type a command or search... (Try 'Export')" autofocus>
+            <div class="cmd-list">
+                <div class="cmd-item" onclick="exportCode()"><i class="fas fa-download"></i> Export HTML/Tailwind Code</div>
+                <div class="cmd-item" onclick="openShareModal()"><i class="fas fa-share-alt" style="color: #3b82f6;"></i> Share Portfolio via Email</div>
+                <div class="cmd-item" onclick="syncFromResume()"><i class="fas fa-sync"></i> Import data from Resume Studio</div>
+                <div class="cmd-item" onclick="startDeployment()"><i class="fas fa-rocket"></i> Deploy to Edge Network</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="deployModal" class="deploy-modal">
+        <div class="deploy-box">
+            <div id="deployLoader">
+                <div class="deploy-spinner"></div>
+                <div class="deploy-status" id="deployStatusTxt">Building Project...</div>
+                <div class="deploy-logs" id="deployLogs">> Initializing build environment...<br></div>
+            </div>
+            <div id="deploySuccess" style="display: none;">
+                <i class="fas fa-check-circle deploy-icon"></i>
+                <div class="deploy-status">Deployment Successful!</div>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Your portfolio is now live on the global edge network.</p>
+                <div class="deploy-link" id="deployLinkTxt" style="display: block;"></div>
+                <button class="btn-primary" onclick="document.getElementById('deployModal').classList.remove('active')" style="margin-top: 20px; width: 100%;">Continue Editing</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shareModal" class="deploy-modal" onclick="if(event.target===this) this.classList.remove('active')">
+        <div class="deploy-box" style="text-align: left; max-width: 450px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 style="margin: 0; color: white; font-size: 1.5rem;">Share Portfolio</h2>
+                <i class="fas fa-times" style="color: #94a3b8; cursor: pointer; font-size: 1.2rem;" onclick="document.getElementById('shareModal').classList.remove('active')"></i>
+            </div>
+            
+            <form onsubmit="shareViaEmail(event)">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="color: #94a3b8; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 8px;">Recipient's Email</label>
+                    <input type="email" id="shareEmail" class="prop-input" placeholder="colleague@example.com" required style="width: 100%; padding: 12px; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; color: white;">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="color: #94a3b8; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 8px;">Subject</label>
+                    <input type="text" id="shareSubject" class="prop-input" value="Check out my new Portfolio!" required style="width: 100%; padding: 12px; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; color: white;">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label style="color: #94a3b8; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 8px;">Message</label>
+                    <textarea id="shareMessage" class="prop-input" rows="4" required style="width: 100%; padding: 12px; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; color: white; font-family: inherit;">Hi, I just built my new portfolio using WorkFolio. Please take a look at the attached file!</textarea>
+                </div>
+                
+                <button type="submit" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; border-radius: 12px; cursor: pointer;"><i class="fas fa-paper-plane" style="margin-right: 8px;"></i> Send via Email</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="portfolio.js"></script>
+</body>
+</html>

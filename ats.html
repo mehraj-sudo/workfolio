@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Scanner | WorkFolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="auth.js"></script>
+    <script>requireLogin();</script> 
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+
+    <style>
+        /* Strict View Enforcement */
+        .resume-view { display: none !important; visibility: hidden !important; opacity: 0 !important; }
+        .resume-view.active { display: block !important; visibility: visible !important; opacity: 1 !important; animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .progress-bg-light { background: #e2e8f0; border-radius: 10px; height: 8px; overflow: hidden; width: 100%; margin-top: 8px;}
+        .progress-fill-light { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
+    </style>
+</head>
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <nav class="glass-nav" style="position: relative; top: 10px; margin-bottom: 20px;">
+        <a href="index.html" class="logo"><i class="fas fa-arrow-left" style="color: var(--primary);"></i><span>ATS Scanner</span></a>
+        <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div class="nav-links" id="navMenu">
+            <a href="index.html" onclick="toggleMenu()">Home</a>
+            <a href="resume.html" onclick="toggleMenu()">Resume Studio</a>
+            <a href="portfolio.html" onclick="toggleMenu()">Portfolio Maker</a>
+            <div class="menu-auth">
+                <span class="userDisplay" style="margin-bottom: 10px; font-weight: 600; color: var(--text-dark);"></span>
+                <a href="login.html" class="authBtn btn-text" style="margin-bottom: 15px;">Sign In</a>
+                <a href="#" onclick="logout(event)" class="logoutBtn btn-text" style="display: none; color: var(--secondary);">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="view-input" class="resume-view active section-padding" style="max-width: 1200px; margin: 0 auto; padding-top: 20px;">
+        <div class="text-center" style="margin-bottom: 10px;">
+            <h1 style="font-size: 3rem; margin-bottom: 10px; color: var(--text-dark); font-weight: 800;">Beat the <span class="text-gradient">Bots</span>.</h1>
+            <p style="color: #64748b; font-size: 1.1rem;">Upload your resume and paste a job description to see exactly how an ATS ranks you.</p>
+        </div>
+
+        <div class="ats-input-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px; position: relative; z-index: 10;">
+            <div class="ats-card glass-panel" style="background: rgba(255, 255, 255, 0.65); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; align-items: start; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                <h3 style="margin: 0 0 10px 0; color: #1e293b; font-weight: 700;">1. Upload Resume</h3>
+                <div id="dropZone" class="dropzone-area" style="width: 100%; flex-grow: 1; border: 2px dashed rgba(139, 92, 246, 0.4); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #64748b; background: rgba(255,255,255,0.5); cursor: pointer; transition: 0.2s; min-height: 220px;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 3.5rem; color: #a855f7; margin-bottom: 15px;"></i>
+                    <p id="fileNameDisplay" style="margin: 0; font-weight: 600; font-size: 1.05rem;">Drag & Drop your PDF, DOCX, or TXT here</p>
+                    <p style="margin: 5px 0 0 0; font-size: 0.85rem;">or click to browse</p>
+                    <input type="file" id="fileInput" accept=".pdf, .txt, .docx, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;">
+                </div>
+            </div>
+
+            <div class="ats-card glass-panel" style="background: rgba(255, 255, 255, 0.65); border-radius: 20px; padding: 25px; position: relative; overflow: visible; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #1e293b; font-weight: 700;">2. Job Description</h3>
+                    <div class="job-search-container" style="position: relative; width: 260px; overflow: visible;">
+                        <input type="text" id="jobSearchInput" placeholder="🔍 Search 100+ Roles..." onclick="toggleJobDropdown(event)" onkeyup="filterJobs()" autocomplete="off" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.4); background: rgba(255, 255, 255, 0.9); color: #1e293b; font-size: 0.85rem; outline: none; transition: 0.2s;">
+                        <div id="jobDropdownList" class="job-dropdown-list"></div>
+                    </div>
+                </div>
+                <textarea id="jobDescription" placeholder="Paste the full job description here..." style="width: 100%; height: 210px; border-radius: 12px; padding: 15px; border: 1px solid rgba(139, 92, 246, 0.4); background: rgba(255, 255, 255, 0.5); color: #334155; resize: none; font-family: inherit; outline: none;"></textarea>
+                <button class="btn-outline" onclick="clearJobDescription()" style="position: absolute; bottom: 35px; right: 35px; background: #fee2e2; border: 1px solid #fca5a5; color: #ef4444; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.8rem;">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <div class="text-center" style="margin-top: 40px;">
+            <button class="btn-gradient" onclick="startScan()" style="padding: 15px 40px; font-size: 1.2rem; border-radius: 30px; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);">
+                <i class="fas fa-radar"></i> Scan My Resume
+            </button>
+        </div>
+    </div>
+
+    <div id="view-scanning" class="resume-view section-padding text-center" style="padding-top: 150px;">
+        <i class="fas fa-robot fa-spin" style="font-size: 5rem; color: var(--primary); margin-bottom: 25px;"></i>
+        <h2 id="scanText" style="color: var(--text-dark);">Parsing Resume Data...</h2>
+        <p style="color: #64748b; margin-top: 10px;">Please wait while our NLP engine analyzes keyword density.</p>
+    </div>
+
+    <div id="view-dashboard" class="resume-view section-padding" style="max-width: 1400px; margin: 0 auto; margin-top: 20px;">
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <button class="btn-gradient" onclick="switchView('view-input')" style="border-radius: 20px; padding: 8px 20px;"><i class="fas fa-arrow-left"></i> New Scan</button>
+            <button class="btn-outline" onclick="showHistory()" style="border-radius: 20px; padding: 8px 20px; background: rgba(255,255,255,0.6); color: #1e293b; border-color: rgba(139, 92, 246, 0.4);"><i class="fas fa-history"></i> Scan History <i class="fas fa-chevron-down"></i></button>
+        </div>
+        
+        <div class="ats-top-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-bottom: 30px;">
+            <div class="ats-card score-card text-center glass-panel" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.8); position: relative;">
+                <i class="fas fa-bullseye" style="position: absolute; top: 15px; right: 15px; color: #a855f7; font-size: 1.5rem;"></i>
+                <div class="circular-progress" id="circleMatch" style="--score: 0; margin: 0 auto 15px auto;">
+                    <div class="inner-circle" style="background: white;"><span id="scoreMatch" style="color: #1e293b; font-size: 2.5rem; font-weight: 800;">0</span><span style="font-size: 1.2rem; color: #64748b;">%</span></div>
+                </div>
+                <h3 style="color: #1e293b; margin-bottom: 5px; font-size: 1.2rem; font-weight: 700;">ATS Match Score</h3>
+                <p id="scoreLabel" style="font-weight: bold; color: #f59e0b; margin: 0; font-size: 0.9rem;">Analyzing...</p>
+            </div>
+
+            <div class="ats-card bars-card glass-panel" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.8); display: flex; flex-direction: column; justify-content: center; gap: 20px;">
+                <div class="stat-row">
+                    <span style="color: #1e293b; font-weight: 600;"><i class="fas fa-key" style="color: #ef4444; margin-right: 8px;"></i> Keyword Optimization</span>
+                    <div class="progress-bg-light"><div class="progress-fill-light" id="barKeywords" style="width:0%; background: #ef4444;"></div></div>
+                </div>
+                <div class="stat-row">
+                    <span style="color: #1e293b; font-weight: 600;"><i class="fas fa-clipboard-check" style="color: #f59e0b; margin-right: 8px;"></i> Section Completeness</span>
+                    <div class="progress-bg-light"><div class="progress-fill-light" id="barSections" style="width:0%; background: #f59e0b;"></div></div>
+                </div>
+                <div class="stat-row">
+                    <span style="color: #1e293b; font-weight: 600;"><i class="fas fa-ruler-combined" style="color: #10b981; margin-right: 8px;"></i> Formatting & Readability</span>
+                    <div class="progress-bg-light"><div class="progress-fill-light" id="barFormat" style="width:0%; background: #10b981;"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ats-bottom-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div class="ats-card glass-panel" style="background: rgba(255,255,255,0.7); border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.8);">
+                <h3 style="color: #1e293b; margin-bottom: 5px; font-size: 1.2rem; font-weight: 700;"><i class="fas fa-wrench" style="color: #a855f7;"></i> Skill Gap Analyzer <i class="fas fa-search" style="font-size: 0.9rem;"></i></h3>
+                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 25px;">Based on job description keyword density.</p>
+                <h4 style="color: #10b981; margin-bottom: 12px; font-size: 0.95rem;"><i class="fas fa-check-circle"></i> Matched Skills List</h4>
+                <div class="keyword-tags" id="matchedKeywords" style="margin-bottom: 30px;"></div>
+                <h4 style="color: #ef4444; margin-bottom: 12px; font-size: 0.95rem;"><i class="fas fa-times-circle"></i> Missing Skills List</h4>
+                <div class="keyword-tags" id="missingKeywords"></div>
+            </div>
+
+            <div class="ats-card glass-panel" style="background: rgba(255,255,255,0.7); border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.8);">
+                <h3 style="color: #1e293b; margin-bottom: 15px; font-size: 1.2rem; font-weight: 700;"><i class="fas fa-robot" style="color: #a855f7;"></i> ATS Bot View</h3>
+                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;">This is how software parses your resume.</p>
+                <div id="atsRawText" style="background: #f8fafc; color: #475569; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyOverlay" onclick="closeHistory()" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.4); z-index: 999; backdrop-filter: blur(4px);"></div>
+    <div id="historyModal" class="glass-panel" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width: 90%; max-width: 500px; z-index: 1000; background: rgba(255,255,255,0.95); padding: 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+            <h3 style="margin:0; color:#1e293b; font-weight: 700;">Your Scan History</h3>
+            <button onclick="closeHistory()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#ef4444;"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="historyList" style="max-height: 350px; overflow-y: auto; padding-right: 10px;"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="ats.js"></script>
+</body>
+</html>
