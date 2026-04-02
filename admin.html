@@ -2,132 +2,170 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Data | WorkFolio</title>
+    <title>Admin Panel | WorkFolio</title>
+    <link rel="icon" type="image/png" href="1775117704121_logo.png">
     <link rel="stylesheet" href="style.css">
     <script src="auth.js"></script>
     <style>
-        .admin-wrapper { max-width: 1000px; margin: 50px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h1 { color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        h2 { margin-top: 40px; margin-bottom: 15px; color: var(--dark); font-size: 1.5rem; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border: 1px solid #eee; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f8fafc; color: #333; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; }
-        tr:hover { background: #f1f5f9; }
-        
-        .empty-msg { color: #888; text-align: center; padding: 20px; font-style: italic; }
-        .btn-download { background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-download:hover { background: #059669; }
-
-        /* Badge for User Count */
-        .count-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; vertical-align: middle; margin-left: 10px; }
+        body { background:#f1f5f9; }
+        .admin-wrapper { max-width:1100px; margin:30px auto; padding:0 20px; }
+        .admin-header { background:white; border-radius:20px; padding:30px 40px; box-shadow:0 4px 20px rgba(0,0,0,0.06); margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; }
+        .admin-header h1 { color:var(--primary); margin:0; font-size:1.8rem; }
+        .section-card { background:white; border-radius:20px; padding:30px 40px; box-shadow:0 4px 20px rgba(0,0,0,0.06); margin-bottom:25px; }
+        .section-card h2 { color:var(--text-dark); font-size:1.3rem; margin:0 0 20px; display:flex; align-items:center; gap:10px; }
+        table { width:100%; border-collapse:collapse; }
+        th, td { padding:14px 15px; text-align:left; border-bottom:1px solid #f1f5f9; font-size:0.9rem; }
+        th { background:#f8fafc; color:#475569; font-weight:700; text-transform:uppercase; font-size:0.78rem; letter-spacing:0.05em; }
+        tr:hover td { background:#f8fafc; }
+        .count-badge { background:var(--primary); color:white; padding:3px 10px; border-radius:20px; font-size:0.78rem; }
+        .btn-download { background:linear-gradient(135deg,#10b981,#059669); color:white; border:none; padding:10px 22px; border-radius:10px; cursor:pointer; font-weight:700; transition:0.2s; font-size:0.9rem; }
+        .btn-download:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(16,185,129,0.3); }
+        .empty-msg { color:#94a3b8; text-align:center; padding:30px; font-style:italic; }
+        .hash-pill { font-family:monospace; background:#f1f5f9; color:#64748b; padding:4px 8px; border-radius:6px; font-size:0.78rem; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:inline-block; }
+        .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:15px; margin-bottom:25px; }
+        .stat-box { background:white; border-radius:16px; padding:20px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.04); }
+        .stat-box .num { font-size:2rem; font-weight:800; color:var(--primary); }
+        .stat-box .lbl { font-size:0.8rem; color:#94a3b8; margin-top:4px; }
+        .btn-logout { background:transparent; border:1.5px solid #ef4444; color:#ef4444; padding:8px 18px; border-radius:10px; cursor:pointer; font-weight:600; transition:0.2s; }
+        .btn-logout:hover { background:#ef4444; color:white; }
     </style>
 </head>
-<body style="background: #f1f5f9;">
-
-    <nav class="navbar">
-        <a href="index.html" class="logo" style="font-size: 1.8rem;">←</a>
-        <div class="logo-text" style="font-size: 1.2rem; font-weight: bold;">Admin Panel</div>
+<body>
+    <nav class="navbar" style="background:white;box-shadow:0 1px 10px rgba(0,0,0,0.06);padding:15px 30px;display:flex;justify-content:space-between;align-items:center;margin-bottom:0;">
+        <a href="index.html" style="font-size:1.5rem;color:var(--text-dark);text-decoration:none;">← </a>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--text-dark);">🛡️ Admin Panel</div>
+        <button class="btn-logout" onclick="sessionStorage.removeItem('workfolio_admin_verified'); window.location.reload();">Lock Panel</button>
     </nav>
 
-    <div class="admin-wrapper">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h1>Database Records</h1>
-            <button class="btn-download" onclick="downloadData()">Download Full Database</button>
+    <div class="admin-wrapper" id="adminContent" style="display:none;">
+
+        <!-- Stats -->
+        <div class="stat-grid" id="statGrid"></div>
+
+        <!-- Admin Card -->
+        <div class="admin-header">
+            <div>
+                <h1>📊 Database Records</h1>
+                <p style="margin:5px 0 0;color:#94a3b8;font-size:0.9rem;">All data is stored locally in this browser's localStorage.</p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn-download" onclick="downloadData()">⬇ Export JSON</button>
+                <button class="btn-download" style="background:linear-gradient(135deg,#4f46e5,#8b5cf6);" onclick="clearAllData()">🗑 Clear All Data</button>
+            </div>
         </div>
 
-        <h2><i class="fas fa-envelope"></i> Contact Messages <span id="msgCount" class="count-badge">0</span></h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Message</th>
-                </tr>
-            </thead>
-            <tbody id="messageTable">
-                </tbody>
-        </table>
+        <!-- Messages -->
+        <div class="section-card">
+            <h2><i class="fas fa-envelope" style="color:#4f46e5;"></i> Contact Messages <span id="msgCount" class="count-badge">0</span></h2>
+            <table>
+                <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Message</th></tr></thead>
+                <tbody id="messageTable"></tbody>
+            </table>
+        </div>
 
-        <h2><i class="fas fa-users"></i> Registered Users <span id="userCount" class="count-badge">0</span></h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Joined Date</th>
-                    <th>Username</th>
-                    <th>Contact (Email/Phone)</th>
-                    <th>Password</th>
-                </tr>
-            </thead>
-            <tbody id="userTable">
-                </tbody>
-        </table>
+        <!-- Users -->
+        <div class="section-card">
+            <h2><i class="fas fa-users" style="color:#10b981;"></i> Registered Users <span id="userCount" class="count-badge">0</span></h2>
+            <table>
+                <thead><tr><th>Joined</th><th>Username</th><th>Contact</th><th>Password Hash</th></tr></thead>
+                <tbody id="userTable"></tbody>
+            </table>
+        </div>
+
+        <!-- ATS Scans -->
+        <div class="section-card">
+            <h2><i class="fas fa-chart-bar" style="color:#f59e0b;"></i> Platform Stats</h2>
+            <table>
+                <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+                <tbody id="statsTable"></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        // === 1. LOAD MESSAGES ===
-        // We check 'workfolio_messages' (new) and 'career_master_messages' (old backup)
-        const rawMsgs = localStorage.getItem('workfolio_messages') || localStorage.getItem('career_master_messages');
-        const messages = JSON.parse(rawMsgs) || [];
-        
+        // ✅ Admin PIN gate — must verify before seeing any data
+        window.requireAdmin();
+
+        document.getElementById('adminContent').style.display = 'block';
+
+        // Load Messages
+        const rawMsgs = localStorage.getItem('workfolio_messages') || '[]';
+        const messages = JSON.parse(rawMsgs);
         document.getElementById('msgCount').innerText = messages.length;
         const msgBody = document.getElementById('messageTable');
-
         if (messages.length === 0) {
-            msgBody.innerHTML = '<tr><td colspan="4" class="empty-msg">No messages found.</td></tr>';
+            msgBody.innerHTML = '<tr><td colspan="4" class="empty-msg">No messages yet.</td></tr>';
         } else {
-            messages.reverse().forEach(msg => {
-                const date = msg.date || new Date(msg.id).toLocaleString();
-                msgBody.innerHTML += `
-                    <tr>
-                        <td style="font-size:0.85rem; color:#666;">${date}</td>
-                        <td><strong>${msg.name}</strong></td>
-                        <td>${msg.email}</td>
-                        <td>${msg.text || msg.message}</td>
-                    </tr>`;
+            messages.slice().reverse().forEach(msg => {
+                msgBody.innerHTML += `<tr>
+                    <td style="color:#94a3b8;font-size:0.82rem;">${msg.date || '—'}</td>
+                    <td><strong>${msg.name}</strong></td>
+                    <td>${msg.email}</td>
+                    <td>${msg.text || msg.message || '—'}</td>
+                </tr>`;
             });
         }
 
-        // === 2. LOAD USERS ===
-        // We check 'workfolio_users' (new) and 'career_master_users' (old backup)
-        const rawUsers = localStorage.getItem('workfolio_users') || localStorage.getItem('career_master_users');
-        const users = JSON.parse(rawUsers) || [];
-
+        // Load Users (passwords are now hashed — safe to display hash)
+        const rawUsers = localStorage.getItem('workfolio_users') || '[]';
+        const users = JSON.parse(rawUsers);
         document.getElementById('userCount').innerText = users.length;
         const userBody = document.getElementById('userTable');
-
         if (users.length === 0) {
             userBody.innerHTML = '<tr><td colspan="4" class="empty-msg">No users registered yet.</td></tr>';
         } else {
-            users.reverse().forEach(u => {
-                // If 'joined' date is missing, show 'N/A'
-                const joined = u.joined || "N/A";
-                userBody.innerHTML += `
-                    <tr>
-                        <td style="font-size:0.85rem; color:#666;">${joined}</td>
-                        <td><strong>${u.username}</strong></td>
-                        <td>${u.contact || u.email}</td>
-                        <td style="font-family:monospace; color:#ef4444;">${u.password}</td> 
-                    </tr>`;
+            users.slice().reverse().forEach(u => {
+                const hashPreview = u.password ? u.password.substring(0, 16) + '...' : 'legacy';
+                userBody.innerHTML += `<tr>
+                    <td style="color:#94a3b8;font-size:0.82rem;">${u.joined || '—'}</td>
+                    <td><strong>${u.username}</strong></td>
+                    <td>${u.contact || u.email || '—'}</td>
+                    <td><span class="hash-pill" title="SHA-256 hash (${u.password || ''})">${hashPreview}</span></td>
+                </tr>`;
             });
         }
 
-        // === 3. DOWNLOAD ALL DATA ===
+        // Platform Stats
+        const totalResumes   = (JSON.parse(localStorage.getItem('workfolio_resumes') || '[]')).length;
+        const totalScans     = parseInt(localStorage.getItem('workfolio_real_scans') || '0');
+        const totalPortfolio = Object.keys(localStorage).filter(k => k.startsWith('workfolio_portfolios')).length;
+        const statsBody      = document.getElementById('statsTable');
+        [
+            ['Total users registered', users.length],
+            ['Total contact messages', messages.length],
+            ['Resumes created (this browser)', totalResumes],
+            ['ATS scans run', totalScans],
+            ['Portfolio projects saved', totalPortfolio],
+        ].forEach(([label, val]) => {
+            statsBody.innerHTML += `<tr><td style="color:#64748b;">${label}</td><td><strong>${val}</strong></td></tr>`;
+        });
+
+        // Stat Cards
+        document.getElementById('statGrid').innerHTML = `
+            <div class="stat-box"><div class="num">${users.length}</div><div class="lbl">Registered Users</div></div>
+            <div class="stat-box"><div class="num">${messages.length}</div><div class="lbl">Messages Received</div></div>
+            <div class="stat-box"><div class="num">${totalResumes}</div><div class="lbl">Resumes Saved</div></div>
+            <div class="stat-box"><div class="num">${totalScans}</div><div class="lbl">ATS Scans Run</div></div>
+        `;
+
+        // Export
         function downloadData() {
-            const fullData = {
-                users: users,
-                messages: messages
-            };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullData, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", "workfolio_full_database.json");
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
+            const data = JSON.stringify({ users, messages }, null, 2);
+            const a = document.createElement('a');
+            a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(data);
+            a.download = 'workfolio_database_' + new Date().toISOString().slice(0,10) + '.json';
+            a.click();
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL users, messages, resumes, and portfolios from this browser. This cannot be undone. Continue?')) {
+                ['workfolio_users','workfolio_messages','workfolio_resumes','workfolio_session','workfolio_real_scans'].forEach(k => localStorage.removeItem(k));
+                Object.keys(localStorage).filter(k => k.startsWith('workfolio_')).forEach(k => localStorage.removeItem(k));
+                alert('✅ All data cleared. Reloading...');
+                window.location.reload();
+            }
         }
     </script>
-
 </body>
 </html>
