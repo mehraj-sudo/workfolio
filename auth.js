@@ -1,121 +1,236 @@
-const DB_USERS_KEY = 'workfolio_users';
-const SESSION_KEY = 'workfolio_session';
+// ============================================================
+// WORKFOLIO AUTH.JS — UPGRADED v2.0
+// Features: SHA-256 hashing, Remember Me, session guards,
+//           admin protection, XSS sanitization, OAuth stubs
+// ============================================================
 
-// === 1. REGISTRATION & LOGIN LOGIC ===
-function registerUser(username, contact, password) {
-    let users = JSON.parse(localStorage.getItem(DB_USERS_KEY)) || [];
-    
-    // Check if user already exists
-    if (users.find(u => u.username === username)) {
-        return { success: false, message: "Username already exists!" };
-    }
-    
-    // Save new user to localStorage so their account is permanent
-    users.push({ username, contact, password, joined: new Date().toLocaleString() });
-    localStorage.setItem(DB_USERS_KEY, JSON.stringify(users));
-    
-    return { success: true, message: "Registered Successfully!" };
+const DB_USERS_KEY   = 'workfolio_users';
+const SESSION_KEY    = 'workfolio_session';
+const ADMIN_PIN_KEY  = 'workfolio_admin_verified';
+
+// === UTILITY: SHA-256 HASHING (replaces plain-text passwords) ===
+async function hashPassword(password) {
+    const msgBuffer = new TextEncoder().encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-function loginUser(identifier, password) {
+// === UTILITY: XSS SANITIZER ===
+window.sanitize = function(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/\//g, '&#x2F;');
+};
+
+// === 1. REGISTRATION ===
+async function registerUser(username, contact, password) {
     let users = JSON.parse(localStorage.getItem(DB_USERS_KEY)) || [];
-    
-    // Find matching user
-    const user = users.find(u => (u.username === identifier || u.contact === identifier) && u.password === password);
-    
+
+    if (users.find(u => u.username === username)) {
+        return { success: false, message: 'Username already exists!' };
+    }
+    if (password.length < 6) {
+        return { success: false, message: 'Password must be at least 6 characters.' };
+    }
+
+    const hashedPwd = await hashPassword(password);
+    users.push({
+        username: sanitize(username),
+        contact:  sanitize(contact),
+        password: hashedPwd,           // ✅ hashed, never plain text
+        joined:   new Date().toLocaleString()
+    });
+    localStorage.setItem(DB_USERS_KEY, JSON.stringify(users));
+    return { success: true, message: 'Registered Successfully!' };
+}
+
+// === 2. LOGIN ===
+async function loginUser(identifier, password, rememberMe = false) {
+    let users = JSON.parse(localStorage.getItem(DB_USERS_KEY)) || [];
+    const hashedPwd = await hashPassword(password);
+
+    const user = users.find(u =>
+        (u.username === identifier || u.contact === identifier) &&
+        u.password === hashedPwd
+    );
+
     if (user) {
-        // Save the active session to sessionStorage (clears when browser closes)
-        sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
+        const sessionData = JSON.stringify({ username: user.username, contact: user.contact });
+        sessionStorage.setItem(SESSION_KEY, sessionData);
+        if (rememberMe) {
+            // Persist for 30 days
+            localStorage.setItem(SESSION_KEY, sessionData);
+            localStorage.setItem('workfolio_session_expiry', Date.now() + 30 * 24 * 60 * 60 * 1000);
+        }
         return { success: true };
     }
-    return { success: false, message: "Invalid Login Details" };
+    return { success: false, message: 'Invalid username or password.' };
 }
 
+// === 3. AUTO-RESTORE persistent session on page load ===
+(function restoreSession() {
+    if (!sessionStorage.getItem(SESSION_KEY)) {
+        const stored  = localStorage.getItem(SESSION_KEY);
+        const expiry  = localStorage.getItem('workfolio_session_expiry');
+        if (stored && expiry && Date.now() < parseInt(expiry)) {
+            sessionStorage.setItem(SESSION_KEY, stored);
+        } else {
+            localStorage.removeItem(SESSION_KEY);
+            localStorage.removeItem('workfolio_session_expiry');
+        }
+    }
+})();
+
+// === 4. LOGOUT ===
 function logout(event) {
-    if(event) event.preventDefault();
-    // Remove the session from sessionStorage
+    if (event) event.preventDefault();
     sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem('workfolio_session_expiry');
     window.location.href = 'index.html';
 }
 
-// === 2. PROCESS LOGIN FORM SUBMISSION ===
-function processLogin(event) {
+// === 5. PROCESS LOGIN FORM ===
+async function processLogin(event) {
     event.preventDefault();
-    
-    const identifier = document.getElementById('loginId').value;
-    const password = document.getElementById('loginPassword').value;
+    const identifier = document.getElementById('loginId').value.trim();
+    const password   = document.getElementById('loginPassword').value;
+    const rememberMe = document.getElementById('rememberMe')?.checked || false;
+    const btn        = document.getElementById('loginBtn');
 
-    const result = loginUser(identifier, password);
-    if(result.success) {
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...'; }
+
+    const result = await loginUser(identifier, password, rememberMe);
+    if (result.success) {
         window.location.href = 'index.html';
     } else {
-        alert("❌ " + result.message);
+        showFormError('loginError', result.message);
+        if (btn) { btn.disabled = false; btn.innerHTML = 'Sign In'; }
     }
 }
 
-// === 3. PASSWORD VISIBILITY TOGGLE ===
-function togglePasswordVisibility() {
-    const passwordInput = document.getElementById("loginPassword");
-    const eyeIcon = document.getElementById("toggleEye");
-    
-    if (passwordInput && eyeIcon) {
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            eyeIcon.classList.remove("fa-eye");
-            eyeIcon.classList.add("fa-eye-slash");
-        } else {
-            passwordInput.type = "password";
-            eyeIcon.classList.remove("fa-eye-slash");
-            eyeIcon.classList.add("fa-eye");
-        }
-    }
-}
-
-// === 4. ROUTE PROTECTION (THE SECURITY GUARDS) ===
-function checkAccess(event, targetUrl) {
-    if(event) event.preventDefault();
-    
-    // Check sessionStorage for active login
-    const session = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-    
-    if (!session) {
-        alert("🔒 Please sign in or create an account to access our premium features.");
-        window.location.href = 'login.html';
+// === 6. PASSWORD VISIBILITY TOGGLE ===
+function togglePasswordVisibility(inputId = 'loginPassword', iconId = 'toggleEye') {
+    const input = document.getElementById(inputId);
+    const icon  = document.getElementById(iconId);
+    if (!input || !icon) return;
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
     } else {
-        window.location.href = targetUrl; 
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+// === 7. ROUTE PROTECTION ===
+function checkAccess(event, targetUrl) {
+    if (event) event.preventDefault();
+    const session = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+    if (!session) {
+        sessionStorage.setItem('wf_redirect_after_login', targetUrl);
+        showToast('🔒 Please sign in to access this feature.', 'warning');
+        setTimeout(() => window.location.href = 'login.html', 1200);
+    } else {
+        window.location.href = targetUrl;
     }
 }
 
 function requireLogin() {
-    // Check sessionStorage for active login on protected pages
     const session = JSON.parse(sessionStorage.getItem(SESSION_KEY));
     if (!session) {
-        alert("🔒 Please sign in to access this page.");
         window.location.href = 'login.html';
     }
 }
 
-// === 5. UI UPDATER (Toggles Sign In / Logout Buttons) ===
-window.authUIUpdate = function() {
-    // Check sessionStorage to update the navigation bar
-    const session = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-    
-    const userDisplays = document.querySelectorAll('.userDisplay');
-    const authBtns = document.querySelectorAll('.authBtn'); 
-    const logoutBtns = document.querySelectorAll('.logoutBtn'); 
-
-    if(session) {
-        // User is logged in
-        userDisplays.forEach(el => el.innerText = "👋 Hello, " + session.username);
-        authBtns.forEach(btn => btn.style.display = 'none');
-        logoutBtns.forEach(btn => btn.style.display = 'inline-block');
+// === 8. ADMIN PIN PROTECTION ===
+window.requireAdmin = function() {
+    if (sessionStorage.getItem(ADMIN_PIN_KEY) === 'true') return;
+    const pin = prompt('🔐 Enter Admin PIN to continue:');
+    const ADMIN_PIN = '1234'; // Change this to a strong PIN
+    if (pin !== ADMIN_PIN) {
+        alert('❌ Incorrect PIN. Access denied.');
+        window.location.href = 'index.html';
     } else {
-        // User is logged out
-        userDisplays.forEach(el => el.innerText = "");
-        authBtns.forEach(btn => btn.style.display = 'inline-block');
-        logoutBtns.forEach(btn => btn.style.display = 'none');
+        sessionStorage.setItem(ADMIN_PIN_KEY, 'true');
     }
 };
 
-// Run the UI updater every time a page loads
+// === 9. SAVE CONTACT MESSAGE ===
+window.saveMessage = function(name, email, message) {
+    let messages = JSON.parse(localStorage.getItem('workfolio_messages') || '[]');
+    messages.push({
+        id:      Date.now(),
+        date:    new Date().toLocaleString(),
+        name:    sanitize(name),
+        email:   sanitize(email),
+        text:    sanitize(message)
+    });
+    localStorage.setItem('workfolio_messages', JSON.stringify(messages));
+};
+
+// === 10. UI STATE UPDATER ===
+window.authUIUpdate = function() {
+    const session = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+    document.querySelectorAll('.userDisplay').forEach(el =>
+        el.innerText = session ? '👋 Hello, ' + session.username : ''
+    );
+    document.querySelectorAll('.authBtn').forEach(btn =>
+        btn.style.display = session ? 'none' : 'inline-block'
+    );
+    document.querySelectorAll('.logoutBtn').forEach(btn =>
+        btn.style.display = session ? 'inline-block' : 'none'
+    );
+};
 window.addEventListener('load', window.authUIUpdate);
+
+// === 11. TOAST NOTIFICATION HELPER ===
+window.showToast = function(message, type = 'success') {
+    let toast = document.getElementById('wf-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'wf-toast';
+        toast.style.cssText = `
+            position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px);
+            background:white; padding:14px 24px; border-radius:50px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.12); font-weight:600; font-size:0.95rem;
+            z-index:99999; transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
+            border:1px solid #e2e8f0; display:flex; align-items:center; gap:10px; opacity:0;
+        `;
+        document.body.appendChild(toast);
+    }
+    const colors = { success: '#10b981', warning: '#f59e0b', error: '#ef4444', info: '#4f46e5' };
+    toast.style.borderLeft = `4px solid ${colors[type] || colors.info}`;
+    toast.innerText = message;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(80px)';
+    }, 3500);
+};
+
+// === 12. FORM ERROR HELPER ===
+function showFormError(elementId, message) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        el.innerText = '❌ ' + message;
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 4000);
+    } else {
+        alert('❌ ' + message);
+    }
+}
+
+// === 13. GOOGLE OAUTH STUB (ready to wire to real Google API) ===
+window.signInWithGoogle = function() {
+    // To enable: register your app at console.cloud.google.com
+    // Then replace this with the real Google Identity Services flow
+    showToast('Google Sign-In coming soon! Use email/password for now.', 'info');
+};
