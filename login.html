@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,17 +33,81 @@
         .strength-bar { height:4px; border-radius:2px; background:#e2e8f0; overflow:hidden; }
         .strength-fill { height:100%; border-radius:2px; transition:width 0.3s, background 0.3s; width:0; }
     </style>
+
+    <script>
+    // Universal dark mode restore — runs on every page
+    (function() {
+        const saved = localStorage.getItem('wf_theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', saved);
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    })();
+    function toggleTheme() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+        localStorage.setItem('wf_theme', isDark ? 'light' : 'dark');
+    }
+    function openMenu() {
+        document.getElementById('navMenu')?.classList.add('active');
+        document.getElementById('navOverlay')?.classList.add('active');
+        document.body.classList.add('menu-open');
+    }
+    function closeMenu() {
+        document.getElementById('navMenu')?.classList.remove('active');
+        document.getElementById('navOverlay')?.classList.remove('active');
+        document.body.classList.remove('menu-open');
+    }
+    window.toggleMenu = function() {
+        const menu = document.getElementById('navMenu');
+        if (menu?.classList.contains('active')) closeMenu(); else openMenu();
+    };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+    </script>
+
+    <style>
+    [data-theme="dark"] .auth-box { background:rgba(15,23,42,0.92)!important;border-color:rgba(255,255,255,0.08)!important; }
+    [data-theme="dark"] .auth-header h2 { color:#f1f5f9!important; }
+    [data-theme="dark"] .auth-header p { color:#94a3b8!important; }
+    [data-theme="dark"] .input-group input { background:rgba(30,41,59,0.8)!important;color:#f1f5f9!important;border-color:rgba(255,255,255,0.15)!important; }
+    [data-theme="dark"] .toggle-text { color:#94a3b8!important; }
+    [data-theme="dark"] .toggle-text span { color:var(--primary)!important; }
+    [data-theme="dark"] .forgot-link { color:var(--primary)!important; }
+    [data-theme="dark"] .remember-label { color:#94a3b8!important; }
+    [data-theme="dark"] .error-box { background:#450a0a!important;border-color:#991b1b!important;color:#fca5a5!important; }
+    [data-theme="dark"] .divider::before, [data-theme="dark"] .divider::after { background:rgba(255,255,255,0.12)!important; }
+    [data-theme="dark"] .divider span { color:#64748b!important; }
+    [data-theme="dark"] #navTitleLogin { color:#f1f5f9!important; }
+    </style>
+    <script>
+    (function(){
+        const s=localStorage.getItem('wf_theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+        document.documentElement.setAttribute('data-theme',s);
+        const ic=document.getElementById('themeIconP');
+        if(ic)ic.className=s==='dark'?'fas fa-sun':'fas fa-moon';
+    })();
+    function toggleThemePage(){
+        const d=document.documentElement.getAttribute('data-theme')==='dark';
+        document.documentElement.setAttribute('data-theme',d?'light':'dark');
+        const ic=document.getElementById('themeIconP');
+        if(ic)ic.className=d?'fas fa-moon':'fas fa-sun';
+        localStorage.setItem('wf_theme',d?'light':'dark');
+    }
+    </script>
 </head>
 <body>
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
     <div class="bg-orb orb-3"></div>
 
-    <nav class="glass-nav" style="position:absolute;top:20px;width:auto;padding:10px 25px;">
-        <a href="index.html" class="logo" style="font-size:1.2rem;">
-            <i class="fas fa-arrow-left" style="color:var(--primary);"></i>
-            <span>Back to Home</span>
-        </a>
+        <nav style="position:sticky;top:0;z-index:900;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.07);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <a href="index.html" style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:.9rem;color:var(--text-dark);text-decoration:none;"><i class="fas fa-arrow-left" style="color:var(--primary);"></i> Back</a>
+        <div style="font-weight:800;font-size:1rem;color:var(--text-dark);" id="navTitleLogin"><i class="fas fa-sign-in-alt" style="color:var(--primary);margin-right:6px;"></i>Sign In</div>
+        <button onclick="toggleThemePage()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--text-dark);min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;" title="Toggle dark mode">
+            <i class="fas fa-moon" id="themeIconP"></i>
+        </button>
     </nav>
 
     <div class="auth-wrapper">
