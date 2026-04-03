@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,15 +25,76 @@
         [data-theme="dark"] .field-wrap label { color:#e2e8f0; }
         [data-theme="dark"] .field-wrap input, [data-theme="dark"] .field-wrap textarea { background:rgba(30,41,59,0.8); color:#e2e8f0; border-color:rgba(139,92,246,0.3); }
     </style>
+
+    <script>
+    // Universal dark mode restore — runs on every page
+    (function() {
+        const saved = localStorage.getItem('wf_theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', saved);
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    })();
+    function toggleTheme() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+        localStorage.setItem('wf_theme', isDark ? 'light' : 'dark');
+    }
+    function openMenu() {
+        document.getElementById('navMenu')?.classList.add('active');
+        document.getElementById('navOverlay')?.classList.add('active');
+        document.body.classList.add('menu-open');
+    }
+    function closeMenu() {
+        document.getElementById('navMenu')?.classList.remove('active');
+        document.getElementById('navOverlay')?.classList.remove('active');
+        document.body.classList.remove('menu-open');
+    }
+    window.toggleMenu = function() {
+        const menu = document.getElementById('navMenu');
+        if (menu?.classList.contains('active')) closeMenu(); else openMenu();
+    };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+    </script>
+
+    <style>
+    [data-theme="dark"] .contact-card { background:rgba(15,23,42,0.8)!important;border-color:rgba(255,255,255,0.08)!important; }
+    [data-theme="dark"] .field-wrap label { color:#cbd5e1!important; }
+    [data-theme="dark"] .field-wrap input,[data-theme="dark"] .field-wrap textarea { background:rgba(30,41,59,0.8)!important;color:#f1f5f9!important;border-color:rgba(139,92,246,0.4)!important; }
+    [data-theme="dark"] .page-header h1 { color:#f1f5f9!important; }
+    [data-theme="dark"] .page-header p { color:#94a3b8!important; }
+    [data-theme="dark"] .info-card { background:rgba(15,23,42,0.7)!important;border-color:rgba(255,255,255,0.07)!important; }
+    [data-theme="dark"] .info-card strong { color:#f1f5f9!important; }
+    [data-theme="dark"] #navTitleCon { color:#f1f5f9!important; }
+    </style>
+    <script>
+    (function(){
+        const s=localStorage.getItem('wf_theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+        document.documentElement.setAttribute('data-theme',s);
+        const ic=document.getElementById('themeIconP');
+        if(ic)ic.className=s==='dark'?'fas fa-sun':'fas fa-moon';
+    })();
+    function toggleThemePage(){
+        const d=document.documentElement.getAttribute('data-theme')==='dark';
+        document.documentElement.setAttribute('data-theme',d?'light':'dark');
+        const ic=document.getElementById('themeIconP');
+        if(ic)ic.className=d?'fas fa-moon':'fas fa-sun';
+        localStorage.setItem('wf_theme',d?'light':'dark');
+    }
+    </script>
 </head>
 <body>
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
 
-    <nav class="navbar" style="position:relative;z-index:10;">
-        <a href="index.html" class="logo" style="font-size:1.5rem;"><i class="fas fa-arrow-left"></i></a>
-        <div class="logo-text" style="font-size:1.5rem;font-weight:700;">Contact Support</div>
-        <i class="fas fa-headset fa-2x" style="color:var(--primary);"></i>
+        <nav style="position:sticky;top:0;z-index:900;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.07);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <a href="index.html" style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:.9rem;color:var(--text-dark);text-decoration:none;"><i class="fas fa-arrow-left" style="color:var(--primary);"></i> Back</a>
+        <div style="font-weight:800;font-size:1rem;color:var(--text-dark);" id="navTitleCon"><i class="fas fa-headset" style="color:var(--primary);margin-right:6px;"></i>Contact Support</div>
+        <button onclick="toggleThemePage()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--text-dark);min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;" title="Toggle dark mode">
+            <i class="fas fa-moon" id="themeIconP"></i>
+        </button>
     </nav>
 
     <div class="page-container section-padding" style="position:relative;z-index:10;background:transparent;box-shadow:none;padding-top:20px;">
@@ -91,7 +152,7 @@
                 </div>
                 <div>
                     <p style="font-size:0.75rem;color:#64748b;margin:0 0 4px;text-transform:uppercase;font-weight:700;">Email</p>
-                    <strong style="color:#1e293b;font-size:0.95rem;">support@workfolio.com</strong>
+                    <strong style="color:#1e293b;font-size:0.95rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8dbddd8d8c7dadce8dfc7dac3cec7c4c1c786cbc7c5">[email&#160;protected]</a></strong>
                 </div>
             </div>
             <div class="glass-panel" style="padding:20px 25px;border-radius:15px;display:flex;align-items:center;gap:15px;flex:1;min-width:230px;max-width:280px;">
@@ -119,7 +180,7 @@
         <p class="copyright" style="color:#64748b;">&copy; 2026 WorkFolio Suite. All rights reserved.</p>
     </footer>
 
-    <script src="auth.js"></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="auth.js"></script>
     <script>
         function updateCounter() {
             document.getElementById('charCount').innerText = document.getElementById('inp-msg').value.length;
@@ -192,11 +253,5 @@
             } catch (err) {
                 result.innerHTML = '❌ Network error. Please try again.';
                 result.style.color = '#ef4444';
-            } finally {
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane" style="margin-right:8px;"></i> Send Message';
-                submitBtn.disabled  = false;
             }
         }
-    </script>
-</body>
-</html>
