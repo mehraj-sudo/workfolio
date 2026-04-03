@@ -168,6 +168,13 @@ textarea.pf-input{resize:vertical;min-height:60px;}
   .pf-btn{padding:8px 10px;}
 }
 </style>
+
+    <script>
+    (function(){
+        const s=localStorage.getItem('wf_theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+        document.documentElement.setAttribute('data-theme',s);
+    })();
+    </script>
 </head>
 <body>
 
@@ -285,7 +292,7 @@ textarea.pf-input{resize:vertical;min-height:60px;}
           <span style="background:#f59e0b;"></span>
           <span style="background:#10b981;"></span>
         </div>
-        <div class="url-bar">localhost:3000 · live preview</div>
+        <div class="url-bar">preview.workfolio.app · live preview</div>
         <div class="viewport-btns">
           <button onclick="setViewport('100%')" title="Desktop"><i class="fas fa-desktop"></i></button>
           <button onclick="setViewport('768px')" title="Tablet"><i class="fas fa-tablet-alt"></i></button>
