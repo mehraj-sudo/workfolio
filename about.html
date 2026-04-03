@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>About Us | WorkFolio</title>
+    <meta name="description" content="Learn about WorkFolio — your free career acceleration platform for resumes, portfolios, and ATS scanning.">
+    <link rel="icon" type="image/png" href="1775117704121_logo.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Sticky top nav */
+        .top-nav {
+            position: sticky; top: 0; z-index: 900;
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,0,0,0.07);
+            padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        [data-theme="dark"] .top-nav {
+            background: rgba(15,23,42,0.92) !important;
+            border-bottom-color: rgba(255,255,255,0.07) !important;
+        }
+        .back-btn { display:flex; align-items:center; gap:8px; font-weight:700; font-size:0.9rem; color:var(--text-dark); text-decoration:none; transition:0.2s; }
+        .back-btn:hover { color:var(--primary); }
+        [data-theme="dark"] .back-btn { color:#f1f5f9; }
+        .page-title { font-weight:800; font-size:1rem; color:var(--text-dark); }
+        [data-theme="dark"] .page-title { color:#f1f5f9; }
+        .theme-toggle { background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--text-dark); min-width:40px; min-height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px; transition:0.2s; }
+        .theme-toggle:hover { background:rgba(79,70,229,0.1); color:var(--primary); }
+        [data-theme="dark"] .theme-toggle { color:#f1f5f9; }
+
+        /* About page content */
+        .about-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 20px 80px; }
+        .about-hero { text-align: center; margin-bottom: 60px; }
+        .about-hero h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 900; color: var(--text-dark); margin-bottom: 14px; }
+        .about-hero p { color: var(--text-light); font-size: 1.05rem; line-height: 1.7; max-width: 600px; margin: 0 auto; }
+        [data-theme="dark"] .about-hero h1 { color: #f1f5f9; }
+
+        /* Feature blocks */
+        .feature-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            margin-bottom: 60px;
+            padding: 36px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+        .feature-block.reverse { direction: rtl; }
+        .feature-block.reverse > * { direction: ltr; }
+        [data-theme="dark"] .feature-block { background: rgba(30,41,59,0.6) !important; border-color: rgba(255,255,255,0.07) !important; }
+        @media (max-width: 768px) {
+            .feature-block { grid-template-columns: 1fr; direction: ltr !important; gap: 24px; padding: 24px; }
+            .feature-block.reverse > * { direction: ltr; }
+        }
+
+        .feature-icon-wrap {
+            display: flex; align-items: center; justify-content: center;
+            width: 70px; height: 70px; border-radius: 20px;
+            margin-bottom: 18px; font-size: 2rem; color: white;
+        }
+        .feature-block h3 { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); margin-bottom: 12px; }
+        .feature-block p { color: var(--text-light); line-height: 1.7; margin-bottom: 14px; font-size: 0.95rem; }
+        [data-theme="dark"] .feature-block h3 { color: #f1f5f9; }
+        [data-theme="dark"] .feature-block p { color: #94a3b8; }
+        .feature-block ul { padding-left: 20px; color: var(--text-light); font-size: 0.9rem; line-height: 1.8; }
+        [data-theme="dark"] .feature-block ul { color: #94a3b8; }
+        .feature-visual { text-align: center; }
+        .feature-visual .icon-big { font-size: clamp(5rem, 12vw, 8rem); line-height: 1; }
+
+        /* Stats row */
+        .stats-section {
+            background: linear-gradient(135deg, #4f46e5, #8b5cf6, #ec4899);
+            border-radius: 24px; padding: 50px 30px; text-align: center;
+            color: white; margin-bottom: 60px;
+        }
+        .stats-section h2 { font-size: 1.8rem; font-weight: 900; margin-bottom: 8px; }
+        .stats-section p { opacity: 0.85; margin-bottom: 36px; }
+        .stats-row { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+        .stat-box { min-width: 120px; }
+        .stat-box .n { font-size: 2.2rem; font-weight: 900; }
+        .stat-box .l { font-size: 0.82rem; opacity: 0.8; margin-top: 4px; }
+
+        /* Team / Mission section */
+        .mission-section { text-align: center; margin-bottom: 60px; }
+        .mission-section h2 { font-size: 1.8rem; font-weight: 900; color: var(--text-dark); margin-bottom: 14px; }
+        .mission-section p { color: var(--text-light); font-size: 1rem; line-height: 1.8; max-width: 680px; margin: 0 auto 20px; }
+        [data-theme="dark"] .mission-section h2 { color: #f1f5f9; }
+        [data-theme="dark"] .mission-section p { color: #94a3b8; }
+
+        .divider-line { border: none; border-top: 1px solid rgba(0,0,0,0.07); margin: 50px 0; }
+        [data-theme="dark"] .divider-line { border-top-color: rgba(255,255,255,0.08); }
+    </style>
+</head>
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <!-- Top Nav -->
+    <nav class="top-nav">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Home
+        </a>
+        <div class="page-title"><i class="fas fa-info-circle" style="color:var(--primary); margin-right:6px;"></i>About WorkFolio</div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+    </nav>
+
+    <div class="about-wrap">
+
+        <!-- Hero -->
+        <div class="about-hero">
+            <h1>Empowering Your <span class="text-gradient">Career Journey</span></h1>
+            <p>WorkFolio is your all-in-one, free career acceleration platform. We believe every professional deserves world-class tools to present themselves — regardless of budget.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-section">
+            <h2>Trusted by Job Seekers Worldwide</h2>
+            <p>Thousands of professionals have already built their future with WorkFolio.</p>
+            <div class="stats-row">
+                <div class="stat-box"><div class="n">10K+</div><div class="l">Active Users</div></div>
+                <div class="stat-box"><div class="n">30+</div><div class="l">Resume Templates</div></div>
+                <div class="stat-box"><div class="n">30+</div><div class="l">Portfolio Themes</div></div>
+                <div class="stat-box"><div class="n">100+</div><div class="l">Job Descriptions</div></div>
+                <div class="stat-box"><div class="n">100%</div><div class="l">Free Forever</div></div>
+            </div>
+        </div>
+
+        <hr class="divider-line">
+
+        <!-- Feature 1: Resume Builder -->
+        <div class="feature-block">
+            <div class="feature-content">
+                <div class="feature-icon-wrap" style="background:linear-gradient(135deg,#fbc2eb,#a6c1ee);">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>Intelligent Resume Builder</h3>
+                <p>Craft professional, ATS-friendly resumes in minutes. Choose from 30+ modern templates designed by career experts. Our Canva-style editor lets you customise every detail with real-time preview.</p>
+                <ul>
+                    <li>30+ professional templates with instant switching</li>
+                    <li>Inline editing directly on the resume canvas</li>
+                    <li>AI Summary Generator and bullet point writer</li>
+                    <li>Cover Letter Generator with job description matching</li>
+                    <li>High-resolution PDF export (no watermarks)</li>
+                </ul>
+            </div>
+            <div class="feature-visual">
+                <div class="icon-big">📄</div>
+            </div>
+        </div>
+
+        <!-- Feature 2: Portfolio Maker -->
+        <div class="feature-block reverse">
+            <div class="feature-visual">
+                <div class="icon-big">🎨</div>
+            </div>
+            <div class="feature-content">
+                <div class="feature-icon-wrap" style="background:linear-gradient(135deg,#8ec5fc,#e0c3fc);">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h3>Stunning Portfolio Maker</h3>
+                <p>Stand out with a personal portfolio website. Choose from 30 distinct layouts — from Bento Grid and Glassmorphism to Cyberpunk Neon and Neo-Brutalism. The AI Co-Pilot lets you redesign with just a sentence.</p>
+                <ul>
+                    <li>30 unique visual themes</li>
+                    <li>AI Co-Pilot: type commands to redesign instantly</li>
+                    <li>Live preview with desktop, tablet & mobile viewport</li>
+                    <li>Export as a standalone HTML file to host anywhere</li>
+                    <li>One-click resume data sync</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Feature 3: ATS Scanner -->
+        <div class="feature-block">
+            <div class="feature-content">
+                <div class="feature-icon-wrap" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb);">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3>Advanced ATS Scanner</h3>
+                <p>75% of resumes are rejected by automated software before a human ever sees them. WorkFolio's ATS Scanner gives you an instant compatibility score with keyword analysis, synonym matching, and a full improvement roadmap.</p>
+                <ul>
+                    <li>Supports PDF, DOCX, and TXT file uploads</li>
+                    <li>Synonym-aware keyword matching (JS = JavaScript, etc.)</li>
+                    <li>Section completeness and formatting scoring</li>
+                    <li>Interview question generator based on your skills</li>
+                    <li>Scan history with score trend tracking</li>
+                </ul>
+            </div>
+            <div class="feature-visual">
+                <div class="icon-big">🎯</div>
+            </div>
+        </div>
+
+        <hr class="divider-line">
+
+        <!-- Mission -->
+        <div class="mission-section">
+            <h2>Our Mission</h2>
+            <p>Career tools have historically been locked behind expensive subscriptions or cluttered with ads. WorkFolio was built to change that. We believe every student, graduate, and professional — regardless of where they are in the world — deserves access to the same quality of tools that large corporations use.</p>
+            <p>WorkFolio is built entirely on open web standards — no backend servers, no tracking, no data selling. Your work stays yours.</p>
+            <a href="register.html" class="btn-gradient" style="display:inline-block; margin-top:8px; padding:14px 32px; font-size:1rem;">
+                Start Building for Free →
+            </a>
+        </div>
+
+    </div>
+
+    <footer style="text-align:center; padding:24px; color:var(--text-light); font-size:0.85rem; border-top:1px solid rgba(0,0,0,0.06);">
+        <p>&copy; 2026 WorkFolio Suite. All rights reserved. · <a href="contact.html" style="color:var(--primary); text-decoration:none;">Contact Us</a> · <a href="faq.html" style="color:var(--primary); text-decoration:none;">FAQ</a></p>
+    </footer>
+
+    <script>
+        (function() {
+            const saved = localStorage.getItem('wf_theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', saved);
+            const icon = document.getElementById('themeIcon');
+            if (icon) icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        })();
+        function toggleTheme() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('themeIcon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('wf_theme', isDark ? 'light' : 'dark');
+        }
+    </script>
+</body>
+</html>
