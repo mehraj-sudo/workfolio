@@ -2,168 +2,260 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>FAQ | WorkFolio</title>
+    <meta name="description" content="Frequently asked questions about WorkFolio — resume builder, portfolio maker, and ATS scanner.">
+    <link rel="icon" type="image/png" href="1775117704121_logo.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Professional Centered Accordion */
+        /* Page specific */
+        .faq-page-wrap {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 30px 16px 80px;
+        }
+        .faq-page-hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .faq-page-hero h1 {
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+        .faq-page-hero p {
+            color: var(--text-light);
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
         details {
-            background: white;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            border: 1px solid #eee;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            margin-bottom: 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             overflow: hidden;
             transition: all 0.3s ease;
-            text-align: center; /* Forces everything to center */
         }
-        
-        details:hover {
-            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
-            transform: translateY(-2px);
-        }
-
-        details[open] {
-            border-color: var(--primary);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
-        }
-
+        details:hover { box-shadow: 0 6px 20px rgba(79,70,229,0.08); }
+        details[open] { border-color: var(--primary); box-shadow: 0 8px 24px rgba(79,70,229,0.1); }
         summary {
-            padding: 20px;
+            padding: 18px 22px;
             cursor: pointer;
-            font-weight: 600;
-            color: var(--dark);
+            font-weight: 700;
+            color: var(--text-dark);
             list-style: none;
             display: flex;
-            justify-content: center; /* Center the question text */
+            justify-content: space-between;
             align-items: center;
-            font-size: 1.05rem;
-            position: relative;
+            font-size: 0.97rem;
+            gap: 12px;
         }
-
         summary::-webkit-details-marker { display: none; }
-
-        /* Arrow Icon - Positioned absolute to stay consistent while text centers */
         summary::after {
-            content: '\f078'; 
+            content: '\f078';
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
-            font-size: 0.9rem;
-            color: #999;
-            position: absolute;
-            right: 20px; /* Keep arrow on the right for clean look */
-            transition: transform 0.3s ease;
-        }
-
-        details[open] summary::after {
-            transform: rotate(180deg);
+            font-size: 0.8rem;
             color: var(--primary);
+            flex-shrink: 0;
+            transition: transform 0.3s;
         }
-
+        details[open] summary::after { transform: rotate(180deg); }
         .faq-answer {
-            padding: 5px 40px 30px; /* More padding for centered text reading */
-            color: #555;
-            line-height: 1.8;
-            font-size: 0.95rem;
-            border-top: 1px solid #f0f0f0;
-            max-width: 90%;
-            margin: 0 auto; /* Center the block itself */
+            padding: 0 22px 20px;
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 0.92rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding-top: 14px;
+        }
+        /* Dark mode overrides */
+        [data-theme="dark"] details {
+            background: rgba(30,41,59,0.7) !important;
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+        [data-theme="dark"] details[open] { border-color: var(--primary) !important; }
+        [data-theme="dark"] summary { color: #f1f5f9 !important; }
+        [data-theme="dark"] .faq-answer { color: #94a3b8 !important; border-top-color: rgba(255,255,255,0.07) !important; }
+        [data-theme="dark"] .faq-page-hero h1 { color: #f1f5f9 !important; }
+
+        /* Nav dark mode toggle inline */
+        .top-nav {
+            position: sticky; top: 0; z-index: 900;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,0,0,0.07);
+            padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        [data-theme="dark"] .top-nav {
+            background: rgba(15,23,42,0.9) !important;
+            border-bottom-color: rgba(255,255,255,0.07) !important;
+        }
+        .top-nav .back-btn {
+            display: flex; align-items: center; gap: 8px;
+            font-weight: 700; font-size: 0.9rem; color: var(--text-dark);
+            text-decoration: none; transition: 0.2s;
+        }
+        .top-nav .back-btn:hover { color: var(--primary); }
+        [data-theme="dark"] .top-nav .back-btn { color: #f1f5f9; }
+        .top-nav .page-title { font-weight: 800; font-size: 1rem; color: var(--text-dark); }
+        [data-theme="dark"] .top-nav .page-title { color: #f1f5f9; }
+        .theme-toggle { background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--text-dark); min-width:40px; min-height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px; transition:0.2s; }
+        .theme-toggle:hover { background:rgba(79,70,229,0.1); color:var(--primary); }
+        [data-theme="dark"] .theme-toggle { color: #f1f5f9; }
+
+        /* Category badges */
+        .faq-category {
+            font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.07em; color: var(--primary);
+            margin: 28px 0 10px; padding-left: 2px;
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="index.html" class="logo" style="font-size: 1.5rem;">
-            <i class="fas fa-arrow-left"></i>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <!-- Top Nav -->
+    <nav class="top-nav">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Home
         </a>
-        <div class="logo-text" style="font-size: 1.5rem;">Help Center</div>
-        <i class="fas fa-question-circle"></i>
+        <div class="page-title"><i class="fas fa-question-circle" style="color:var(--primary); margin-right:6px;"></i>Help Center</div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
     </nav>
 
-    <div class="page-container" style="background: rgba(255, 255, 255, 0); backdrop-filter: blur(10px); max-width: 800px; padding: 50px; margin: 50px auto; text-align: center;">
-        
-        <div class="page-header" style="margin-bottom: 40px;">
-            <h1 style="font-family: 'Montserrat', sans-serif; color: var(--dark); margin-bottom: 10px;">Frequently Asked Questions</h1>
-            <p style="color: #666; max-width: 600px; margin: 0 auto;">Everything you need to know about building your career with WorkFolio.</p>
+    <div class="faq-page-wrap">
+        <div class="faq-page-hero">
+            <h1>Frequently Asked <span class="text-gradient">Questions</span></h1>
+            <p>Everything you need to know about building your career with WorkFolio.</p>
         </div>
+
+        <!-- GENERAL -->
+        <div class="faq-category">General</div>
 
         <details>
             <summary>Is WorkFolio completely free?</summary>
-            <div class="faq-answer">
-                Yes! WorkFolio is currently 100% free. You can create unlimited resumes, build your portfolio, and use the ATS scanner without any hidden charges or subscription fees.
-            </div>
-        </details>
-
-        <details>
-            <summary>How does the ATS Scanner work?</summary>
-            <div class="faq-answer">
-                Our scanner compares the text in your resume against a specific job description you provide. It identifies missing keywords and calculates a "Match Score" to help you optimize your application for automated hiring systems.
-            </div>
-        </details>
-
-        <details>
-            <summary>Is my personal data safe?</summary>
-            <div class="faq-answer">
-                We take privacy seriously. By default, your data is stored locally in your browser (Local Storage). Even if you register, we never share your personal information with third-party advertisers.
-            </div>
-        </details>
-
-        <details>
-            <summary>Can I edit my resume after downloading?</summary>
-            <div class="faq-answer">
-                PDFs are final documents. To make changes, simply open the WorkFolio editor again, update your information, and download a fresh PDF. Your data is saved automatically in the editor.
-            </div>
-        </details>
-
-        <details>
-            <summary>Can I use this on my mobile phone?</summary>
-            <div class="faq-answer">
-                Absolutely. WorkFolio is fully responsive. You can build resumes, update your portfolio, and check your ATS score directly from your smartphone or tablet.
-            </div>
-        </details>
-
-        <details>
-            <summary>What file formats are supported?</summary>
-            <div class="faq-answer">
-                We currently support high-quality *PDF* exports. PDF is the global industry standard for job applications because it preserves your formatting on every device.
-            </div>
+            <div class="faq-answer">Yes! WorkFolio is 100% free. You can create unlimited resumes, build portfolios, and use the ATS scanner without any hidden charges, subscriptions, or ads.</div>
         </details>
 
         <details>
             <summary>Do I need an account to use it?</summary>
-            <div class="faq-answer">
-                No, you can use the tools as a Guest. However, creating an account is recommended so your data is backed up safely and accessible if you switch devices or clear your browser cache.
-            </div>
+            <div class="faq-answer">You can explore the homepage as a guest. However, creating a free account is required to access the Resume Builder, Portfolio Maker, and ATS Scanner — this ensures your work is saved and accessible.</div>
         </details>
 
         <details>
-            <summary>What is a Portfolio Website?</summary>
-            <div class="faq-answer">
-                Unlike a standard resume, a Portfolio Website is a digital showcase. It allows you to display project images, detailed case studies, and code snippets to prove your skills visually to recruiters.
-            </div>
+            <summary>Is my personal data safe?</summary>
+            <div class="faq-answer">Your data is stored locally in your browser using localStorage. It never leaves your device and is never shared with advertisers. Passwords are hashed with SHA-256 before storage.</div>
         </details>
 
         <details>
-            <summary>Can I upload my existing resume?</summary>
-            <div class="faq-answer">
-                We currently do not support file uploads. We recommend copying and pasting your details into our builder. This ensures your data is structured correctly for the highest possible ATS compatibility.
-            </div>
+            <summary>Can I use WorkFolio on mobile?</summary>
+            <div class="faq-answer">Absolutely. WorkFolio is fully responsive and works on all screen sizes — phone, tablet, and desktop. The Resume Builder and Portfolio Maker both adapt to mobile layouts automatically.</div>
+        </details>
+
+        <!-- RESUME BUILDER -->
+        <div class="faq-category">Resume Builder</div>
+
+        <details>
+            <summary>How do I download my resume as a PDF?</summary>
+            <div class="faq-answer">In the Resume Editor, click the "Download PDF" button in the top bar. The resume is captured as a high-resolution PDF. On mobile, use the Download PDF button in the top toolbar.</div>
+        </details>
+
+        <details>
+            <summary>Can I edit my resume after downloading?</summary>
+            <div class="faq-answer">Yes. Simply open the Resume Builder again — your data is autosaved. Make your changes and download a fresh PDF. You can create multiple resume versions for different job applications.</div>
+        </details>
+
+        <details>
+            <summary>Can I generate a cover letter?</summary>
+            <div class="faq-answer">Yes! The Resume Builder has a "Cover Letter" tab. Enter the company name, target role, and optionally paste the job description — the AI generator will write a tailored, professional cover letter for you.</div>
+        </details>
+
+        <details>
+            <summary>What templates are available?</summary>
+            <div class="faq-answer">There are 30+ resume templates ranging from classic executive formats to modern split-column, dark-sidebar, creative, and minimalist designs. You can switch templates at any time without losing your data.</div>
+        </details>
+
+        <!-- ATS SCANNER -->
+        <div class="faq-category">ATS Scanner</div>
+
+        <details>
+            <summary>How does the ATS Scanner work?</summary>
+            <div class="faq-answer">Upload your resume (PDF, DOCX, or TXT) and paste a job description. The scanner uses keyword extraction with synonym mapping to calculate a match score, identifies missing skills, generates interview questions, and gives improvement tips.</div>
+        </details>
+
+        <details>
+            <summary>What file formats does the ATS Scanner support?</summary>
+            <div class="faq-answer">The scanner accepts PDF (parsed via PDF.js), DOCX (via Mammoth.js), and plain TXT files. You can also drag and drop your file directly onto the upload area.</div>
+        </details>
+
+        <details>
+            <summary>Why is my ATS score low even though I have the skills?</summary>
+            <div class="faq-answer">ATS systems match exact keywords. If the job says "JavaScript" and your resume says "JS", it may not match. The scanner includes a synonym map, but it's always best to use the exact terms from the job description in your resume.</div>
+        </details>
+
+        <!-- PORTFOLIO MAKER -->
+        <div class="faq-category">Portfolio Maker</div>
+
+        <details>
+            <summary>What is the AI Co-Pilot in the Portfolio Maker?</summary>
+            <div class="faq-answer">The AI Co-Pilot is a natural language command interface inside the editor. Type commands like "switch to dark mode", "make it brutalist", "add a project", "change font to Roboto", or "import my resume" — and the portfolio updates instantly.</div>
+        </details>
+
+        <details>
+            <summary>Can I export my portfolio as a file?</summary>
+            <div class="faq-answer">Yes. Use the "Export" button in the Portfolio Studio to download a complete self-contained HTML file. You can host it on GitHub Pages, Netlify, or any web host for free.</div>
+        </details>
+
+        <details>
+            <summary>How many portfolio templates are available?</summary>
+            <div class="faq-answer">There are 30 distinct portfolio layouts: Bento Grid, Minimalist, Neo-Brutalism, Terminal/Hacker, Glassmorphism, Cyberpunk Neon, Corporate Pro, Split Screen, Marvel/Comic, and many more.</div>
+        </details>
+
+        <!-- TECHNICAL -->
+        <div class="faq-category">Technical</div>
+
+        <details>
+            <summary>Why does Chrome show a warning for the portfolio preview?</summary>
+            <div class="faq-answer">This was a known issue in earlier versions where the preview iframe used a preview.workfolio.app URL. It has been fixed in the latest version — the preview now uses a workfolio.app preview URL which Chrome recognises as safe.</div>
         </details>
 
         <details>
             <summary>How do I contact support?</summary>
-            <div class="faq-answer">
-                If you have specific issues, you can reach us via the "Contact Us" page on the dashboard. We typically respond to queries within 24 hours.
-            </div>
+            <div class="faq-answer">Visit the Contact page from the homepage. Fill in your name, email, and message — it gets sent directly to our team via email. We typically respond within 24 hours.</div>
         </details>
-
     </div>
-    
-    <footer class="dashboard-footer" style="margin-top: 50px;">
-        <p class="copyright">&copy; 2026 WorkFolio Suite. All rights reserved.</p>
+
+    <footer style="text-align:center; padding:24px; color:var(--text-light); font-size:0.85rem; border-top:1px solid rgba(0,0,0,0.06);">
+        <p>&copy; 2026 WorkFolio Suite. All rights reserved. · <a href="contact.html" style="color:var(--primary); text-decoration:none;">Contact Us</a></p>
     </footer>
 
+    <script>
+        // Dark mode restore + toggle
+        (function() {
+            const saved = localStorage.getItem('wf_theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', saved);
+            const icon = document.getElementById('themeIcon');
+            if (icon) icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        })();
+        function toggleTheme() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('themeIcon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('wf_theme', isDark ? 'light' : 'dark');
+        }
+    </script>
 </body>
 </html>
