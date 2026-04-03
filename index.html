@@ -103,34 +103,46 @@
     <div class="bg-orb orb-2"></div>
     <div class="bg-orb orb-3"></div>
 
+    <!-- Nav overlay for closing menu on mobile -->
+    <div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
+
     <nav class="glass-nav reveal-down">
         <a href="index.html" class="logo">
             <i class="fas fa-layer-group" style="color: var(--primary);"></i>
             <span>WorkFolio</span>
         </a>
 
-        <div style="display:flex; align-items:center; gap:10px;">
-            <!-- Dark Mode Toggle -->
-            <button class="theme-toggle" id="themeToggle" title="Toggle dark mode" onclick="toggleTheme()">
+        <!-- Right side: dark mode + hamburger — always visible -->
+        <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+            <button class="theme-toggle" id="themeToggle" title="Toggle dark mode" onclick="toggleTheme()" aria-label="Toggle dark mode">
                 <i class="fas fa-moon" id="themeIcon"></i>
             </button>
-            <div class="menu-toggle" onclick="toggleMenu()">
+            <button class="menu-toggle" onclick="openMenu()" aria-label="Open menu" style="background:none;border:none;cursor:pointer;">
                 <i class="fas fa-bars"></i>
-            </div>
+            </button>
         </div>
 
+        <!-- Slide-in side panel menu -->
         <div class="nav-links" id="navMenu">
-            <a href="#home"     onclick="toggleMenu()">Home</a>
-            <a href="#features" onclick="toggleMenu()">Features</a>
-            <a href="#about"    onclick="toggleMenu()">About</a>
-            <a href="#faq"      onclick="toggleMenu()">FAQ</a>
-            <a href="templates.html" onclick="toggleMenu()">Templates</a>
+            <button class="nav-close-btn" onclick="closeMenu()" aria-label="Close menu">
+                <i class="fas fa-times"></i>
+            </button>
+            <div style="margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid rgba(0,0,0,0.06);">
+                <div style="font-weight:800; font-size:1.1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-layer-group"></i> WorkFolio
+                </div>
+            </div>
+            <a href="#home"     onclick="closeMenu()"><i class="fas fa-home" style="width:20px; color:var(--primary);"></i> Home</a>
+            <a href="#features" onclick="closeMenu()"><i class="fas fa-star" style="width:20px; color:var(--primary);"></i> Features</a>
+            <a href="#about"    onclick="closeMenu()"><i class="fas fa-info-circle" style="width:20px; color:var(--primary);"></i> About</a>
+            <a href="#faq"      onclick="closeMenu()"><i class="fas fa-question-circle" style="width:20px; color:var(--primary);"></i> FAQ</a>
+            <a href="templates.html" onclick="closeMenu()"><i class="fas fa-layer-group" style="width:20px; color:var(--primary);"></i> Templates</a>
 
             <div class="menu-auth">
                 <span class="userDisplay" style="margin-bottom:10px; font-weight:600; color:var(--text-dark);"></span>
-                <a href="login.html"    class="authBtn btn-text"   style="margin-bottom:15px;">Sign In</a>
+                <a href="login.html" class="authBtn btn-text" style="margin-bottom:15px;">Sign In</a>
                 <a href="#" onclick="logout(event)" class="logoutBtn btn-text" style="display:none; color:var(--secondary); margin-bottom:15px;">Logout</a>
-                <a href="#" onclick="checkAccess(event,'resume.html')" class="btn-gradient">Get Started Free</a>
+                <a href="#" onclick="checkAccess(event,'resume.html')" class="btn-gradient" style="text-align:center;">Get Started Free</a>
             </div>
         </div>
     </nav>
@@ -317,6 +329,25 @@
 
     <script src="script.js"></script>
     <script>
+        // === MENU FUNCTIONS (open / close with overlay) ===
+        function openMenu() {
+            document.getElementById('navMenu').classList.add('active');
+            document.getElementById('navOverlay').classList.add('active');
+            document.body.classList.add('menu-open');
+        }
+        function closeMenu() {
+            document.getElementById('navMenu').classList.remove('active');
+            document.getElementById('navOverlay').classList.remove('active');
+            document.body.classList.remove('menu-open');
+        }
+        // Keep backward compat with script.js toggleMenu
+        window.toggleMenu = function() {
+            const menu = document.getElementById('navMenu');
+            if (menu.classList.contains('active')) closeMenu(); else openMenu();
+        };
+        // Close menu when pressing Escape
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
         // === DARK MODE ===
         function toggleTheme() {
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
