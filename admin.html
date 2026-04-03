@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Admin Panel | WorkFolio</title>
     <link rel="icon" type="image/png" href="1775117704121_logo.png">
     <link rel="stylesheet" href="style.css">
@@ -29,6 +30,39 @@
         .btn-logout { background:transparent; border:1.5px solid #ef4444; color:#ef4444; padding:8px 18px; border-radius:10px; cursor:pointer; font-weight:600; transition:0.2s; }
         .btn-logout:hover { background:#ef4444; color:white; }
     </style>
+
+    <script>
+    // Universal dark mode restore — runs on every page
+    (function() {
+        const saved = localStorage.getItem('wf_theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', saved);
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    })();
+    function toggleTheme() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+        localStorage.setItem('wf_theme', isDark ? 'light' : 'dark');
+    }
+    function openMenu() {
+        document.getElementById('navMenu')?.classList.add('active');
+        document.getElementById('navOverlay')?.classList.add('active');
+        document.body.classList.add('menu-open');
+    }
+    function closeMenu() {
+        document.getElementById('navMenu')?.classList.remove('active');
+        document.getElementById('navOverlay')?.classList.remove('active');
+        document.body.classList.remove('menu-open');
+    }
+    window.toggleMenu = function() {
+        const menu = document.getElementById('navMenu');
+        if (menu?.classList.contains('active')) closeMenu(); else openMenu();
+    };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+    </script>
 </head>
 <body>
     <nav class="navbar" style="background:white;box-shadow:0 1px 10px rgba(0,0,0,0.06);padding:15px 30px;display:flex;justify-content:space-between;align-items:center;margin-bottom:0;">
