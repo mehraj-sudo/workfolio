@@ -2,7 +2,30 @@
 // === RESUME BUILDER ENGINE (MASTER BUILD)              ===
 // =========================================================
 
-const DB_RESUMES = 'workfolio_resumes';
+// ── PER-USER STORAGE KEY ──────────────────────────────────
+// Each logged-in user gets their OWN resume list.
+// Guests share a 'guest' slot.
+function getResumeDBKey() {
+    try {
+        const s = JSON.parse(
+            sessionStorage.getItem('workfolio_session') ||
+            localStorage.getItem('workfolio_session') || 'null'
+        );
+        return 'workfolio_resumes_' + (s ? s.username : 'guest');
+    } catch(e) { return 'workfolio_resumes_guest'; }
+}
+// Legacy migration: if old flat key has data, move it to the current user key once
+(function migrateLegacyResumes() {
+    try {
+        const key = getResumeDBKey();
+        const legacyData = localStorage.getItem('workfolio_resumes');
+        if (legacyData && legacyData !== '[]' && !localStorage.getItem(key)) {
+            localStorage.setItem(key, legacyData);
+            console.log('WorkFolio: migrated legacy resumes to per-user key:', key);
+        }
+    } catch(e) {}
+})();
+const DB_RESUMES = getResumeDBKey(); // kept for backward compat references below
 
 // HTML Escaper to prevent input breaking
 window.esc = function(str) {
@@ -15,9 +38,9 @@ window.esc = function(str) {
     try {
         let currentData = localStorage.getItem(DB_RESUMES);
         if (currentData === "[object Object]" || currentData === "undefined" || currentData === "null") {
-            localStorage.setItem(DB_RESUMES, '[]');
+            localStorage.setItem(getResumeDBKey(), '[]');
         }
-    } catch(e) { localStorage.setItem(DB_RESUMES, '[]'); }
+    } catch(e) { localStorage.setItem(getResumeDBKey(), '[]'); }
 })();
 
 const getEmptyResume = () => ({
@@ -35,7 +58,8 @@ let wasNewResume = false;
 
 function getSafeResumes() {
     try {
-        let data = localStorage.getItem(DB_RESUMES);
+        // Always use the current user's key (handles login/logout mid-session)
+        let data = localStorage.getItem(getResumeDBKey());
         let parsed = data ? JSON.parse(data) : [];
         return Array.isArray(parsed) ? parsed.filter(res => res && res.personal) : [];
     } catch(e) { return []; }
@@ -91,7 +115,7 @@ window.deleteResume = function(index) {
     if(confirm("Delete this resume?")) {
         let resumes = getSafeResumes();
         resumes.splice(index, 1);
-        localStorage.setItem(DB_RESUMES, JSON.stringify(resumes));
+        localStorage.setItem(getResumeDBKey(), JSON.stringify(resumes));
         renderDashboard();
     }
 };
@@ -125,7 +149,7 @@ window.exitWithoutSaving = function() {
     if(confirm("Exit without saving? Changes will be lost.")) {
         let resumes = getSafeResumes();
         if (!wasNewResume && activeResumeIndex !== -1 && backupSnapshot) resumes[activeResumeIndex] = JSON.parse(backupSnapshot);
-        localStorage.setItem(DB_RESUMES, JSON.stringify(resumes));
+        localStorage.setItem(getResumeDBKey(), JSON.stringify(resumes));
         window.switchView('view-dashboard');
     }
 };
@@ -192,7 +216,7 @@ window.saveData = function() {
         if(activeResumeIndex === -1) { resumes.push(resumeData); activeResumeIndex = resumes.length - 1; } 
         else { resumes[activeResumeIndex] = resumeData; }
         
-        localStorage.setItem(DB_RESUMES, JSON.stringify(resumes));
+        localStorage.setItem(getResumeDBKey(), JSON.stringify(resumes));
         sessionStorage.setItem('wf_active_index', activeResumeIndex);
     } catch(e) { console.error(e); }
 };
