@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Scanner | WorkFolio</title>
+    <meta name="description" content="Scan your resume against job descriptions and get an instant ATS compatibility score.">
+    <link rel="icon" type="image/png" href="1775117704121_logo.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="auth.js"></script>
+    <script>requireLogin();</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <style>
+        .resume-view { display:none!important; visibility:hidden!important; opacity:0!important; }
+        .resume-view.active { display:block!important; visibility:visible!important; opacity:1!important; animation:fadeIn .4s ease forwards; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .progress-bg-light { background:#e2e8f0;border-radius:10px;height:10px;overflow:hidden;width:100%;margin-top:8px;}
+        .progress-fill-light { height:100%;border-radius:10px;transition:width 1.2s ease-in-out; }
+        .tab-btn { padding:8px 18px;border-radius:30px;border:1.5px solid rgba(139,92,246,0.3);background:transparent;cursor:pointer;font-weight:600;font-size:0.85rem;color:#64748b;transition:0.2s; }
+        .tab-btn.active { background:var(--primary);color:white;border-color:var(--primary); }
+        .result-tab { display:none; } .result-tab.active { display:block; }
+    </style>
+</head>
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <nav class="glass-nav" style="position:relative;top:10px;margin-bottom:20px;">
+        <a href="index.html" class="logo"><i class="fas fa-arrow-left" style="color:var(--primary);"></i><span>ATS Scanner</span></a>
+        <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div class="nav-links" id="navMenu">
+            <a href="index.html" onclick="toggleMenu()">Home</a>
+            <a href="resume.html" onclick="toggleMenu()">Resume Studio</a>
+            <a href="portfolio.html" onclick="toggleMenu()">Portfolio</a>
+            <div class="menu-auth">
+                <span class="userDisplay" style="margin-bottom:10px;font-weight:600;color:var(--text-dark);"></span>
+                <a href="login.html" class="authBtn btn-text" style="margin-bottom:15px;">Sign In</a>
+                <a href="#" onclick="logout(event)" class="logoutBtn btn-text" style="display:none;color:var(--secondary);">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- INPUT VIEW -->
+    <div id="view-input" class="resume-view active section-padding" style="max-width:1200px;margin:0 auto;padding-top:20px;">
+        <div class="text-center" style="margin-bottom:30px;">
+            <div style="display:inline-block;background:rgba(79,70,229,0.1);color:var(--primary);padding:6px 16px;border-radius:50px;font-size:0.85rem;font-weight:700;margin-bottom:15px;border:1px solid rgba(79,70,229,0.2);">🤖 AI-Powered Analysis</div>
+            <h1 style="font-size:3rem;margin-bottom:10px;color:var(--text-dark);font-weight:800;">Beat the <span class="text-gradient">Bots</span>.</h1>
+            <p style="color:#64748b;font-size:1.1rem;">Upload your resume &amp; paste a job description. Get your ATS score in seconds.</p>
+        </div>
+
+        <div class="ats-input-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:30px;position:relative;z-index:10;">
+            <!-- Upload -->
+            <div class="glass-panel" style="border-radius:20px;padding:25px;display:flex;flex-direction:column;gap:15px;">
+                <h3 style="margin:0;color:#1e293b;font-weight:700;"><span style="background:var(--primary);color:white;border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;margin-right:8px;">1</span>Upload Resume</h3>
+                <div id="dropZone" style="flex-grow:1;border:2px dashed rgba(139,92,246,0.4);border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:#64748b;background:rgba(255,255,255,0.5);cursor:pointer;transition:0.2s;min-height:200px;padding:20px;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:3rem;color:#a855f7;margin-bottom:15px;"></i>
+                    <p id="fileNameDisplay" style="margin:0;font-weight:600;font-size:1rem;">Drag &amp; Drop your PDF, DOCX, or TXT here</p>
+                    <p style="margin:8px 0 0;font-size:0.82rem;color:#94a3b8;">Supported: PDF, DOCX, TXT — Max 10MB</p>
+                    <input type="file" id="fileInput" accept=".pdf,.txt,.docx,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none;">
+                </div>
+            </div>
+
+            <!-- Job Description -->
+            <div class="glass-panel" style="border-radius:20px;padding:25px;position:relative;overflow:visible;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
+                    <h3 style="margin:0;color:#1e293b;font-weight:700;"><span style="background:var(--primary);color:white;border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;margin-right:8px;">2</span>Job Description</h3>
+                    <div class="job-search-container" style="position:relative;width:240px;overflow:visible;">
+                        <input type="text" id="jobSearchInput" placeholder="🔍 Search 30+ roles..." onclick="toggleJobDropdown(event)" onkeyup="filterJobs()" autocomplete="off" style="width:100%;padding:8px 12px;border-radius:8px;border:1.5px solid rgba(139,92,246,0.4);background:rgba(255,255,255,0.9);color:#1e293b;font-size:0.85rem;outline:none;transition:0.2s;">
+                        <div id="jobDropdownList" class="job-dropdown-list"></div>
+                    </div>
+                </div>
+                <textarea id="jobDescription" placeholder="Paste the full job description here, or select a role above..." style="width:100%;height:190px;border-radius:12px;padding:14px;border:1.5px solid rgba(139,92,246,0.3);background:rgba(255,255,255,0.6);color:#334155;resize:none;font-family:inherit;outline:none;font-size:0.92rem;line-height:1.5;"></textarea>
+                <button onclick="clearJobDescription()" style="position:absolute;bottom:32px;right:32px;background:#fee2e2;border:1px solid #fca5a5;color:#ef4444;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:0.8rem;font-weight:600;">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <div class="text-center" style="margin-top:35px;">
+            <button class="btn-gradient" onclick="startScan()" style="padding:16px 45px;font-size:1.2rem;border-radius:30px;box-shadow:0 10px 25px rgba(79,70,229,0.35);">
+                <i class="fas fa-search"></i> Scan My Resume
+            </button>
+            <p style="color:#94a3b8;font-size:0.82rem;margin-top:10px;">Your resume is analyzed locally — never uploaded to our servers.</p>
+        </div>
+    </div>
+
+    <!-- SCANNING VIEW -->
+    <div id="view-scanning" class="resume-view section-padding text-center" style="padding-top:130px;">
+        <div style="width:120px;height:120px;border-radius:50%;border:4px solid rgba(79,70,229,0.2);border-top-color:var(--primary);animation:spin 1s linear infinite;margin:0 auto 25px;position:relative;">
+            <div style="position:absolute;top:-4px;left:-4px;right:-4px;bottom:-4px;border-radius:50%;border:4px solid transparent;border-bottom-color:#ec4899;animation:spin 2s linear infinite reverse;"></div>
+        </div>
+        <h2 id="scanText" style="color:var(--text-dark);">Parsing Resume Data...</h2>
+        <p style="color:#64748b;margin-top:10px;">Our NLP engine is analyzing keyword density and semantic matches.</p>
+        <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard" class="resume-view section-padding" style="max-width:1400px;margin:0 auto;margin-top:20px;">
+
+        <div style="display:flex;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+            <button class="btn-gradient" onclick="switchView('view-input')" style="border-radius:20px;padding:8px 22px;"><i class="fas fa-arrow-left"></i> New Scan</button>
+            <div style="display:flex;gap:10px;">
+                <button class="btn-outline" onclick="showHistory()" style="border-radius:20px;padding:8px 18px;background:rgba(255,255,255,0.6);color:#1e293b;border-color:rgba(139,92,246,0.4);"><i class="fas fa-history"></i> History</button>
+            </div>
+        </div>
+
+        <!-- Score + Bars -->
+        <div class="ats-top-grid" style="display:grid;grid-template-columns:1fr 2fr;gap:25px;margin-bottom:25px;">
+            <div class="ats-card glass-panel text-center" style="border-radius:20px;padding:30px;position:relative;">
+                <i class="fas fa-bullseye" style="position:absolute;top:15px;right:15px;color:#a855f7;font-size:1.4rem;"></i>
+                <div class="circular-progress" id="circleMatch" style="--score:0;margin:0 auto 15px auto;">
+                    <div class="inner-circle" style="background:white;"><span id="scoreMatch" style="color:#1e293b;font-size:2.5rem;font-weight:800;">0</span><span style="font-size:1.1rem;color:#64748b;">%</span></div>
+                </div>
+                <h3 style="color:#1e293b;margin-bottom:5px;font-size:1.1rem;font-weight:700;">ATS Match Score</h3>
+                <p id="scoreLabel" style="font-weight:700;color:#f59e0b;margin:0;font-size:0.9rem;">Analyzing...</p>
+            </div>
+
+            <div class="ats-card glass-panel" style="border-radius:20px;padding:30px;display:flex;flex-direction:column;justify-content:center;gap:22px;">
+                <div>
+                    <span style="color:#1e293b;font-weight:600;font-size:0.95rem;"><i class="fas fa-key" style="color:#ef4444;margin-right:8px;"></i>Keyword Optimization</span>
+                    <div class="progress-bg-light"><div class="progress-fill-light" id="barKeywords" style="width:0%;background:linear-gradient(90deg,#ef4444,#f97316);"></div></div>
+                </div>
+                <div>
+                    <span style="color:#1e293b;font-weight:600;font-size:0.95rem;"><i class="fas fa-clipboard-check" style="color:#f59e0b;margin-right:8px;"></i>Section Completeness</span>
+                    <div class="progress-bg-light"><div class="progress-fill-light" id="barSections" style="width:0%;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div>
+                </div>
+                <div>
+                    <span style="color:#1e293b;font-weight:600;font-size:0.95rem;"><i class="fas fa-ruler-combined" style="color:#10b981;margin-right:8px;"></i>Formatting &amp; Readability</span>
+                    <div class="progress-bg-light"><div class="progress-fill-light" id="barFormat" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Tabs -->
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+            <button class="tab-btn active" onclick="showTab('skills', this)"><i class="fas fa-wrench"></i> Skill Gap</button>
+            <button class="tab-btn" onclick="showTab('interview', this)"><i class="fas fa-comment-dots"></i> Interview Questions</button>
+            <button class="tab-btn" onclick="showTab('tips', this)"><i class="fas fa-lightbulb"></i> Improvement Tips</button>
+            <button class="tab-btn" onclick="showTab('botview', this)"><i class="fas fa-robot"></i> ATS Bot View</button>
+        </div>
+
+        <div class="ats-bottom-grid" style="display:grid;grid-template-columns:1fr;gap:20px;">
+
+            <!-- Skills Tab -->
+            <div id="tab-skills" class="result-tab active ats-card glass-panel" style="border-radius:20px;padding:30px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+                    <div>
+                        <h4 style="color:#10b981;margin-bottom:12px;font-size:0.95rem;"><i class="fas fa-check-circle"></i> Matched Skills</h4>
+                        <div class="keyword-tags" id="matchedKeywords"></div>
+                    </div>
+                    <div>
+                        <h4 style="color:#ef4444;margin-bottom:12px;font-size:0.95rem;"><i class="fas fa-times-circle"></i> Missing Skills — Add These!</h4>
+                        <div class="keyword-tags" id="missingKeywords"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interview Tab -->
+            <div id="tab-interview" class="result-tab ats-card glass-panel" style="border-radius:20px;padding:30px;">
+                <h3 style="color:#1e293b;margin-bottom:5px;font-size:1.1rem;font-weight:700;"><i class="fas fa-comment-dots" style="color:#a855f7;"></i> Likely Interview Questions</h3>
+                <p style="font-size:0.85rem;color:#64748b;margin-bottom:20px;">Based on your matched skills and the job description.</p>
+                <div id="interviewQuestions"></div>
+            </div>
+
+            <!-- Tips Tab -->
+            <div id="tab-tips" class="result-tab ats-card glass-panel" style="border-radius:20px;padding:30px;">
+                <h3 style="color:#1e293b;margin-bottom:5px;font-size:1.1rem;font-weight:700;"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> Improvement Tips</h3>
+                <p style="font-size:0.85rem;color:#64748b;margin-bottom:20px;">Actionable steps to improve your score.</p>
+                <div id="improvementTips"></div>
+            </div>
+
+            <!-- Bot View Tab -->
+            <div id="tab-botview" class="result-tab ats-card glass-panel" style="border-radius:20px;padding:30px;">
+                <h3 style="color:#1e293b;margin-bottom:5px;font-size:1.1rem;font-weight:700;"><i class="fas fa-robot" style="color:#a855f7;"></i> ATS Bot View</h3>
+                <p style="font-size:0.85rem;color:#64748b;margin-bottom:15px;">Raw text extracted from your resume, as an ATS sees it.</p>
+                <div id="atsRawText" style="background:#0f172a;color:#38bdf8;font-family:monospace;padding:15px;border-radius:8px;height:280px;overflow-y:auto;font-size:0.82rem;white-space:pre-wrap;line-height:1.5;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="historyOverlay" onclick="closeHistory()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:999;backdrop-filter:blur(4px);"></div>
+    <div id="historyModal" class="glass-panel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:500px;z-index:1000;background:rgba(255,255,255,0.97);padding:30px;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,0.2);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid #e2e8f0;padding-bottom:10px;">
+            <h3 style="margin:0;color:#1e293b;font-weight:700;">Your Scan History</h3>
+            <button onclick="closeHistory()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#ef4444;"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="historyList" style="max-height:400px;overflow-y:auto;padding-right:5px;"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="ats.js"></script>
+    <script>
+        function showTab(name, btn) {
+            document.querySelectorAll('.result-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
+</body>
+</html>

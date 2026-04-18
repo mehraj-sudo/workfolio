@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Templates Library | WorkFolio</title>
+    <meta name="description" content="Browse 60+ professionally designed resume and portfolio templates on WorkFolio.">
+    <link rel="icon" type="image/png" href="1775117704121_logo.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Sticky top nav */
+        .top-nav {
+            position: sticky; top: 0; z-index: 900;
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,0,0,0.07);
+            padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        }
+        [data-theme="dark"] .top-nav {
+            background: rgba(15,23,42,0.92) !important;
+            border-bottom-color: rgba(255,255,255,0.07) !important;
+        }
+        .back-btn { display:flex; align-items:center; gap:8px; font-weight:700; font-size:0.9rem; color:var(--text-dark); text-decoration:none; transition:0.2s; flex-shrink:0; }
+        .back-btn:hover { color:var(--primary); }
+        [data-theme="dark"] .back-btn { color:#f1f5f9; }
+        .page-title { font-weight:800; font-size:1rem; color:var(--text-dark); white-space:nowrap; }
+        [data-theme="dark"] .page-title { color:#f1f5f9; }
+        .theme-toggle { background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--text-dark); min-width:40px; min-height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px; transition:0.2s; flex-shrink:0; }
+        .theme-toggle:hover { background:rgba(79,70,229,0.1); color:var(--primary); }
+        [data-theme="dark"] .theme-toggle { color:#f1f5f9; }
+
+        /* Page layout */
+        .tpl-page-wrap { max-width: 1200px; margin: 0 auto; padding: 30px 16px 80px; }
+        .tpl-page-hero { text-align:center; margin-bottom:36px; }
+        .tpl-page-hero h1 { font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; color:var(--text-dark); margin-bottom:10px; }
+        .tpl-page-hero p { color:var(--text-light); font-size:1rem; }
+        [data-theme="dark"] .tpl-page-hero h1 { color:#f1f5f9; }
+
+        /* Filter bar */
+        .filter-bar { display:flex; justify-content:center; gap:10px; margin-bottom:36px; flex-wrap:wrap; }
+        .filter-btn {
+            padding: 9px 22px; border-radius: 30px;
+            border: 1.5px solid rgba(79,70,229,0.25);
+            background: rgba(255,255,255,0.7);
+            color: var(--text-dark); font-weight: 700; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s; backdrop-filter: blur(6px);
+        }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        [data-theme="dark"] .filter-btn { background: rgba(30,41,59,0.7); color:#cbd5e1; border-color:rgba(255,255,255,0.12); }
+        [data-theme="dark"] .filter-btn.active { background: var(--primary); color:white; }
+
+        /* Template grid */
+        .tpl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        @media(max-width: 480px) { .tpl-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:14px; } }
+
+        .tpl-card {
+            background: white; border-radius: 18px; overflow: hidden;
+            border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.25s;
+            display: flex; flex-direction: column;
+        }
+        .tpl-card:hover { transform: translateY(-5px); box-shadow: 0 14px 35px rgba(79,70,229,0.14); border-color: var(--primary); }
+        [data-theme="dark"] .tpl-card { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .tpl-card:hover { border-color: var(--primary); }
+
+        .tpl-preview { height: 130px; position: relative; overflow: hidden; }
+        .tpl-card-body { padding: 14px; flex: 1; display: flex; flex-direction: column; }
+        .tpl-card-body h3 { font-size: 0.88rem; font-weight: 800; color: #1e293b; margin-bottom: 3px; }
+        [data-theme="dark"] .tpl-card-body h3 { color: #f1f5f9; }
+        .tpl-card-body p { font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px; flex:1; }
+        .tpl-type-badge { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; display:inline-block; margin-bottom:10px; }
+        .tpl-choose-btn { width:100%; padding:8px; border:none; border-radius:10px; font-weight:700; font-size:0.8rem; cursor:pointer; color:white; transition:0.2s; }
+        .tpl-choose-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
+
+        /* Toast notification */
+        #toast {
+            position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+            background: white; padding: 12px 24px; border-radius: 50px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12); font-weight: 700; font-size: 0.9rem;
+            z-index: 9999; transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
+            opacity: 0; border-left: 4px solid #10b981; color: #1e293b;
+            display: flex; align-items: center; gap: 10px;
+            pointer-events: none;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <!-- Top Nav -->
+    <nav class="top-nav">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Home
+        </a>
+        <div class="page-title"><i class="fas fa-layer-group" style="color:var(--primary);margin-right:6px;"></i>Templates</div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+    </nav>
+
+    <div class="tpl-page-wrap">
+        <div class="tpl-page-hero">
+            <h1>Explore <span class="text-gradient">60+ Templates</span></h1>
+            <p>Expertly designed layouts to help you land your dream role.</p>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterTemplates('all',this)">All Templates</button>
+            <button class="filter-btn" onclick="filterTemplates('resume',this)">Resumes</button>
+            <button class="filter-btn" onclick="filterTemplates('portfolio',this)">Portfolios</button>
+        </div>
+
+        <div class="tpl-grid" id="templateContainer"></div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast"><i class="fas fa-check-circle" style="color:#10b981;"></i> Template selected! Redirecting...</div>
+
+    <script src="script.js"></script>
+    <script>
+        // Dark mode
+        (function() {
+            const saved = localStorage.getItem('wf_theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', saved);
+            const icon = document.getElementById('themeIcon');
+            if (icon) icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        })();
+        function toggleTheme() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('themeIcon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('wf_theme', isDark ? 'light' : 'dark');
+        }
+
+        // Template data
+        const allTemplates = [
+            // RESUMES
+            { type:'resume', name:'The Executive',      color:'#0f172a', desc:'Classic ATS-Friendly',       link:'resume.html' },
+            { type:'resume', name:'Tech Innovator',     color:'#3b82f6', desc:'Light Left Sidebar',         link:'resume.html' },
+            { type:'resume', name:'Creative Director',  color:'#8b5cf6', desc:'Bold Top Header',            link:'resume.html' },
+            { type:'resume', name:'The Strategist',     color:'#1e293b', desc:'Centered & Elegant',         link:'resume.html' },
+            { type:'resume', name:'Data Architect',     color:'#0ea5e9', desc:'Perfect 50/50 Split',        link:'resume.html' },
+            { type:'resume', name:'Pure Minimalist',    color:'#000000', desc:'High Whitespace',            link:'resume.html' },
+            { type:'resume', name:'Agency Pro',         color:'#111827', desc:'Dark Sidebar',               link:'resume.html' },
+            { type:'resume', name:'The Scholar',        color:'#7f1d1d', desc:'Dense Academic Format',      link:'resume.html' },
+            { type:'resume', name:'Startup Founder',    color:'#10b981', desc:'Modern Two-Column',          link:'resume.html' },
+            { type:'resume', name:'Frontend Dev',       color:'#059669', desc:'Code-Inspired Dark',         link:'resume.html' },
+            { type:'resume', name:'UX Researcher',      color:'#ec4899', desc:'Clean & Soft',               link:'resume.html' },
+            { type:'resume', name:'Legal Counsel',      color:'#334155', desc:'Traditional Serif',          link:'resume.html' },
+            { type:'resume', name:'Product Manager',    color:'#0284c7', desc:'Friendly & Open',            link:'resume.html' },
+            { type:'resume', name:'Sales Director',     color:'#ea580c', desc:'Direct & Bold',              link:'resume.html' },
+            { type:'resume', name:'HR Specialist',      color:'#14b8a6', desc:'Approachable Sidebar',       link:'resume.html' },
+            { type:'resume', name:'Art Director',       color:'#be123c', desc:'Dramatic Header',            link:'resume.html' },
+            { type:'resume', name:'Cloud Engineer',     color:'#0369a1', desc:'Deep Tech',                  link:'resume.html' },
+            { type:'resume', name:'Consultant',         color:'#475569', desc:'Corporate Reliable',         link:'resume.html' },
+            { type:'resume', name:'Educator',           color:'#15803d', desc:'Academic Structured',        link:'resume.html' },
+            { type:'resume', name:'Civil Engineer',     color:'#b91c1c', desc:'Structural Grid',            link:'resume.html' },
+            { type:'resume', name:'Content Writer',     color:'#4c1d95', desc:'Editorial Style',            link:'resume.html' },
+            { type:'resume', name:'Brand Strategist',   color:'#c026d3', desc:'Avant-garde',                link:'resume.html' },
+            { type:'resume', name:'Healthcare Pro',     color:'#0e7490', desc:'Clinical & Clean',           link:'resume.html' },
+            { type:'resume', name:'Event Planner',      color:'#db2777', desc:'Stylized & Fun',             link:'resume.html' },
+            { type:'resume', name:'Public Relations',   color:'#b45309', desc:'High-End Luxury',            link:'resume.html' },
+            { type:'resume', name:'Scientist',          color:'#4f46e5', desc:'Journal Format',             link:'resume.html' },
+            { type:'resume', name:'The Visionary',      color:'#64748b', desc:'Future-Forward Mono',        link:'resume.html' },
+            { type:'resume', name:'Systems Analyst',    color:'#1d4ed8', desc:'High Readability Grid',      link:'resume.html' },
+            { type:'resume', name:'Operations Lead',    color:'#4338ca', desc:'Traditional Serif',          link:'resume.html' },
+            { type:'resume', name:'Start from Scratch', color:'#94a3b8', desc:'Blank Canvas',               link:'resume.html' },
+            // PORTFOLIOS
+            { type:'portfolio', name:'Bento Grid',       color:'#8b5cf6', desc:'Modern asymmetric layout',  link:'portfolio.html' },
+            { type:'portfolio', name:'Minimalist',        color:'#64748b', desc:'Ultra-clean whitespace',    link:'portfolio.html' },
+            { type:'portfolio', name:'Neo-Brutalism',     color:'#000000', desc:'Bold borders, raw energy',  link:'portfolio.html' },
+            { type:'portfolio', name:'Terminal / Hacker', color:'#10b981', desc:'Developer dark theme',      link:'portfolio.html' },
+            { type:'portfolio', name:'Glassmorphism',     color:'#4f46e5', desc:'Frosted gradient panels',   link:'portfolio.html' },
+            { type:'portfolio', name:'Cyberpunk Neon',    color:'#06b6d4', desc:'Neon glow effects',         link:'portfolio.html' },
+            { type:'portfolio', name:'Corporate Pro',     color:'#1e293b', desc:'Trust-building B2B style',  link:'portfolio.html' },
+            { type:'portfolio', name:'Neumorphic',        color:'#94a3b8', desc:'Soft shadow depth UI',      link:'portfolio.html' },
+            { type:'portfolio', name:'Split Screen',      color:'#3b82f6', desc:'Hero left, content right',  link:'portfolio.html' },
+            { type:'portfolio', name:'Magazine',          color:'#374151', desc:'Editorial long-form',        link:'portfolio.html' },
+            { type:'portfolio', name:'SaaS Dashboard',    color:'#6366f1', desc:'App-style card grid',        link:'portfolio.html' },
+            { type:'portfolio', name:'Bento Dark',        color:'#4f46e5', desc:'Dark bento asymmetric',     link:'portfolio.html' },
+            { type:'portfolio', name:'Paper White',       color:'#64748b', desc:'Clean paper aesthetic',     link:'portfolio.html' },
+            { type:'portfolio', name:'Gradient Wave',     color:'#ec4899', desc:'Animated gradient hero',    link:'portfolio.html' },
+            { type:'portfolio', name:'Retro 90s',         color:'#ea580c', desc:'Vintage bold design',       link:'portfolio.html' },
+            { type:'portfolio', name:'Split Dark',        color:'#0f172a', desc:'Dark split layout',         link:'portfolio.html' },
+            { type:'portfolio', name:'Serif Classic',     color:'#1e293b', desc:'Academic formal',           link:'portfolio.html' },
+            { type:'portfolio', name:'Timeline Story',    color:'#f59e0b', desc:'Narrative scroll layout',   link:'portfolio.html' },
+            { type:'portfolio', name:'Cards Stack',       color:'#a855f7', desc:'Layered card depth',        link:'portfolio.html' },
+            { type:'portfolio', name:'Matrix Green',      color:'#10b981', desc:'Matrix code rain',          link:'portfolio.html' },
+            { type:'portfolio', name:'Pastel Dream',      color:'#db2777', desc:'Soft pastel cards',         link:'portfolio.html' },
+            { type:'portfolio', name:'Brutalist Bold',    color:'#000000', desc:'Typography-first',          link:'portfolio.html' },
+            { type:'portfolio', name:'Monochrome',        color:'#374151', desc:'Black & white contrast',    link:'portfolio.html' },
+            { type:'portfolio', name:'Floating Cards',    color:'#6366f1', desc:'Elevated card layout',      link:'portfolio.html' },
+            { type:'portfolio', name:'Aurora',            color:'#7c3aed', desc:'Northern lights gradient',  link:'portfolio.html' },
+            { type:'portfolio', name:'Blueprint',         color:'#1d4ed8', desc:'Technical/Engineering',     link:'portfolio.html' },
+            { type:'portfolio', name:'Dusk Gradient',     color:'#9333ea', desc:'Warm to cool gradient',     link:'portfolio.html' },
+            { type:'portfolio', name:'Neon Pulse',        color:'#a855f7', desc:'Animated neon borders',     link:'portfolio.html' },
+            { type:'portfolio', name:'Bento Light',       color:'#4f46e5', desc:'Light bento grid',          link:'portfolio.html' },
+            { type:'portfolio', name:'Marvel / Comic',    color:'#dc2626', desc:'Superhero epic theme',       link:'portfolio.html' },
+        ];
+
+        let currentFilter = 'all';
+
+        function filterTemplates(type, btn) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderTemplates();
+        }
+
+        function renderTemplates() {
+            const container = document.getElementById('templateContainer');
+            const filtered = currentFilter === 'all' ? allTemplates : allTemplates.filter(t => t.type === currentFilter);
+
+            container.innerHTML = filtered.map(t => {
+                const isResume = t.type === 'resume';
+                const badgeBg  = isResume ? 'rgba(79,70,229,0.12)' : 'rgba(168,85,247,0.12)';
+                const badgeCol = isResume ? '#4338ca' : '#7c3aed';
+                const badgeTxt = isResume ? 'Resume' : 'Portfolio';
+                return `
+                <div class="tpl-card" onclick="useTemplate('${t.link}','${t.name}')">
+                    <div class="tpl-preview">
+                        <div style="width:28%;background:${t.color};height:100%;"></div>
+                        <div style="flex:1;background:#f8fafc;display:flex;flex-direction:column;padding:10px;gap:6px;">
+                            <div style="width:80%;height:8px;background:${t.color};border-radius:3px;opacity:.9;"></div>
+                            <div style="width:55%;height:5px;background:#e2e8f0;border-radius:3px;"></div>
+                            <div style="width:90%;height:5px;background:#e2e8f0;border-radius:3px;"></div>
+                            <div style="display:flex;gap:4px;flex:1;margin-top:2px;">
+                                <div style="flex:2;background:#e2e8f0;border-radius:3px;opacity:.5;"></div>
+                                <div style="flex:1;background:#e2e8f0;border-radius:3px;opacity:.4;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tpl-card-body">
+                        <span class="tpl-type-badge" style="background:${badgeBg};color:${badgeCol};">${badgeTxt}</span>
+                        <h3>${t.name}</h3>
+                        <p>${t.desc}</p>
+                        <button class="tpl-choose-btn" style="background:${t.color === '#000000' ? '#1e293b' : t.color};">Use Template</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function useTemplate(link, name) {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); window.location.href = link; }, 1400);
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', renderTemplates);
+    </script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | WorkFolio</title>
+    <meta name="description" content="Create your free WorkFolio account and start building professional resumes and portfolios today.">
+    <link rel="icon" type="image/png" href="1775117704121_logo.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="auth.js"></script>
+    <style>
+        .error-box { background:#fee2e2; border:1px solid #fca5a5; color:#991b1b; border-radius:12px; padding:12px 16px; font-size:0.9rem; margin-bottom:15px; display:none; font-weight:600; }
+        .success-box { background:#d1fae5; border:1px solid #6ee7b7; color:#065f46; border-radius:12px; padding:12px 16px; font-size:0.9rem; margin-bottom:15px; display:none; font-weight:600; }
+        .divider { display:flex; align-items:center; gap:12px; margin:20px 0; }
+        .divider::before, .divider::after { content:''; flex:1; height:1px; background:rgba(0,0,0,0.1); }
+        .divider span { font-size:0.85rem; color:var(--text-light); white-space:nowrap; }
+        .btn-google { width:100%; padding:14px; border-radius:16px; border:1.5px solid rgba(0,0,0,0.1); background:white; color:#334155; font-size:1rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.3s; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+        .btn-google:hover { box-shadow:0 4px 15px rgba(0,0,0,0.12); transform:translateY(-1px); }
+        #registerBtn { width:100%; border:none; padding:15px; border-radius:16px; font-size:1.1rem; cursor:pointer; margin-top:10px; }
+
+        /* Password Strength */
+        .strength-wrap { margin:-10px 0 15px; }
+        .strength-bar  { height:4px; border-radius:2px; background:#e2e8f0; overflow:hidden; margin-bottom:4px; }
+        .strength-fill { height:100%; border-radius:2px; transition:width 0.3s, background 0.3s; width:0; }
+        .strength-text { font-size:0.8rem; color:var(--text-light); }
+
+        /* Benefits list */
+        .benefits { display:flex; flex-direction:column; gap:8px; margin-top:20px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.05); }
+        .benefit-item { display:flex; align-items:center; gap:10px; font-size:0.88rem; color:var(--text-light); }
+        .benefit-item i { color:#10b981; font-size:0.9rem; }
+    </style>
+
+    <script>
+    // Universal dark mode restore — runs on every page
+    (function() {
+        const saved = localStorage.getItem('wf_theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', saved);
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    })();
+    function toggleTheme() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+        localStorage.setItem('wf_theme', isDark ? 'light' : 'dark');
+    }
+    function openMenu() {
+        document.getElementById('navMenu')?.classList.add('active');
+        document.getElementById('navOverlay')?.classList.add('active');
+        document.body.classList.add('menu-open');
+    }
+    function closeMenu() {
+        document.getElementById('navMenu')?.classList.remove('active');
+        document.getElementById('navOverlay')?.classList.remove('active');
+        document.body.classList.remove('menu-open');
+    }
+    window.toggleMenu = function() {
+        const menu = document.getElementById('navMenu');
+        if (menu?.classList.contains('active')) closeMenu(); else openMenu();
+    };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+    </script>
+
+    <style>
+    [data-theme="dark"] .auth-box { background:rgba(15,23,42,0.92)!important;border-color:rgba(255,255,255,0.08)!important; }
+    [data-theme="dark"] .auth-header h2 { color:#f1f5f9!important; }
+    [data-theme="dark"] .auth-header p { color:#94a3b8!important; }
+    [data-theme="dark"] .input-group input { background:rgba(30,41,59,0.8)!important;color:#f1f5f9!important;border-color:rgba(255,255,255,0.15)!important; }
+    [data-theme="dark"] .toggle-text { color:#94a3b8!important; }
+    [data-theme="dark"] .toggle-text span { color:var(--primary)!important; }
+    [data-theme="dark"] .error-box { background:#450a0a!important;border-color:#991b1b!important;color:#fca5a5!important; }
+    [data-theme="dark"] .success-box { background:#052e16!important;border-color:#166534!important;color:#bbf7d0!important; }
+    [data-theme="dark"] .strength-text { color:#94a3b8!important; }
+    [data-theme="dark"] .benefits .benefit-item { color:#94a3b8!important; }
+    [data-theme="dark"] #navTitleReg { color:#f1f5f9!important; }
+    [data-theme="dark"] .divider::before, [data-theme="dark"] .divider::after { background:rgba(255,255,255,0.12)!important; }
+    [data-theme="dark"] .divider span { color:#64748b!important; }
+    </style>
+    <script>
+    (function(){
+        const s=localStorage.getItem('wf_theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+        document.documentElement.setAttribute('data-theme',s);
+        const ic=document.getElementById('themeIconP');
+        if(ic)ic.className=s==='dark'?'fas fa-sun':'fas fa-moon';
+    })();
+    function toggleThemePage(){
+        const d=document.documentElement.getAttribute('data-theme')==='dark';
+        document.documentElement.setAttribute('data-theme',d?'light':'dark');
+        const ic=document.getElementById('themeIconP');
+        if(ic)ic.className=d?'fas fa-moon':'fas fa-sun';
+        localStorage.setItem('wf_theme',d?'light':'dark');
+    }
+    </script>
+</head>
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+        <nav style="position:sticky;top:0;z-index:900;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.07);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <a href="index.html" style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:.9rem;color:var(--text-dark);text-decoration:none;"><i class="fas fa-arrow-left" style="color:var(--primary);"></i> Back</a>
+        <div style="font-weight:800;font-size:1rem;color:var(--text-dark);" id="navTitleReg"><i class="fas fa-user-plus" style="color:var(--primary);margin-right:6px;"></i>Create Account</div>
+        <button onclick="toggleThemePage()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--text-dark);min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;" title="Toggle dark mode">
+            <i class="fas fa-moon" id="themeIconP"></i>
+        </button>
+    </nav>
+
+    <div class="auth-wrapper">
+        <div class="glass-panel auth-box">
+
+            <div class="auth-header">
+                <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--primary),#8b5cf6);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:1.8rem;color:white;">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h2>Join <span class="text-gradient">WorkFolio</span></h2>
+                <p style="color:var(--text-light);">Start your career journey — it's completely free.</p>
+            </div>
+
+            <div class="error-box"   id="regError"></div>
+            <div class="success-box" id="regSuccess"></div>
+
+            <!-- Google Sign Up -->
+            <button class="btn-google" onclick="signInWithGoogle()" type="button">
+                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                Sign up with Google
+            </button>
+
+            <div class="divider"><span>or create with email</span></div>
+
+            <form id="registerForm" onsubmit="processRegister(event)">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="regUsername" placeholder="Choose a unique username" required autocomplete="username" oninput="validateUsername(this)">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="text" id="regContact" placeholder="Email or Phone number" required autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="regPassword" placeholder="Password (min 6 characters)" minlength="6" required autocomplete="new-password" oninput="checkStrength(this.value)">
+                    <i class="fas fa-eye" id="toggleRegEye1" onclick="togglePasswordVisibility('regPassword','toggleRegEye1')" style="position:absolute;right:20px;left:auto;z-index:10;cursor:pointer;color:var(--text-light);"></i>
+                </div>
+                <!-- Password Strength Meter -->
+                <div class="strength-wrap">
+                    <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                    <div class="strength-text" id="strengthText">Enter a password above</div>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="regConfirm" placeholder="Re-enter password" minlength="6" required autocomplete="new-password">
+                    <i class="fas fa-eye" id="toggleRegEye2" onclick="togglePasswordVisibility('regConfirm','toggleRegEye2')" style="position:absolute;right:20px;left:auto;z-index:10;cursor:pointer;color:var(--text-light);"></i>
+                </div>
+
+                <button type="submit" id="registerBtn" class="btn-gradient">Create Free Account</button>
+            </form>
+
+            <div class="benefits">
+                <div class="benefit-item"><i class="fas fa-check-circle"></i> Unlimited resume & portfolio creation</div>
+                <div class="benefit-item"><i class="fas fa-check-circle"></i> Autosave across sessions</div>
+                <div class="benefit-item"><i class="fas fa-check-circle"></i> ATS scan history tracking</div>
+                <div class="benefit-item"><i class="fas fa-shield-alt"></i> Your data stays private & local</div>
+            </div>
+
+            <div class="toggle-text" style="margin-top:20px;">
+                Already have an account? <span onclick="window.location.href='login.html'" style="color:var(--primary);font-weight:800;cursor:pointer;">Sign In</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function validateUsername(input) {
+            const val = input.value;
+            const valid = /^[a-zA-Z0-9_]{3,20}$/.test(val);
+            input.style.borderColor = val.length === 0 ? '' : (valid ? '#10b981' : '#ef4444');
+        }
+
+        function checkStrength(password) {
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            let score = 0;
+            if (password.length >= 6)  score++;
+            if (password.length >= 10) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+            const levels = [
+                { pct: '0%',   color: '#e2e8f0', label: 'Enter a password above' },
+                { pct: '20%',  color: '#ef4444', label: '🔴 Very Weak' },
+                { pct: '40%',  color: '#f97316', label: '🟠 Weak' },
+                { pct: '60%',  color: '#f59e0b', label: '🟡 Fair' },
+                { pct: '80%',  color: '#10b981', label: '🟢 Strong' },
+                { pct: '100%', color: '#059669', label: '✅ Very Strong' },
+            ];
+            const lv = levels[score] || levels[0];
+            fill.style.width      = lv.pct;
+            fill.style.background = lv.color;
+            text.innerText        = lv.label;
+        }
+
+        async function processRegister(event) {
+            event.preventDefault();
+            const username  = document.getElementById('regUsername').value.trim();
+            const contact   = document.getElementById('regContact').value.trim();
+            const pass      = document.getElementById('regPassword').value;
+            const confirm   = document.getElementById('regConfirm').value;
+            const btn       = document.getElementById('registerBtn');
+            const errBox    = document.getElementById('regError');
+            const succBox   = document.getElementById('regSuccess');
+
+            errBox.style.display  = 'none';
+            succBox.style.display = 'none';
+
+            if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+                errBox.innerText = '❌ Username must be 3-20 characters: letters, numbers, and underscores only.';
+                errBox.style.display = 'block'; return;
+            }
+            if (pass !== confirm) {
+                errBox.innerText = '❌ Passwords do not match!';
+                errBox.style.display = 'block'; return;
+            }
+            if (pass.length < 6) {
+                errBox.innerText = '❌ Password must be at least 6 characters.';
+                errBox.style.display = 'block'; return;
+            }
+
+            btn.disabled    = true;
+            btn.innerHTML   = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+
+            const result = await registerUser(username, contact, pass);
+            if (result.success) {
+                succBox.innerText     = '✅ Account created! Redirecting to sign in...';
+                succBox.style.display = 'block';
+                setTimeout(() => window.location.href = 'login.html', 1500);
+            } else {
+                errBox.innerText     = '❌ ' + result.message;
+                errBox.style.display = 'block';
+                btn.disabled         = false;
+                btn.innerHTML        = 'Create Free Account';
+            }
+        }
+    </script>
+</body>
+</html>
