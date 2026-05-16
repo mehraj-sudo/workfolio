@@ -1,0 +1,42 @@
+{
+  "name": "WorkFolio Suite",
+  "short_name": "WorkFolio",
+  "description": "Free resume builder, portfolio maker, and ATS scanner for job seekers.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "1775117704121_logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "1775117704121_logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "education", "business"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Resume Builder",
+      "short_name": "Resume",
+      "description": "Open the Resume Builder",
+      "url": "/resume.html",
+      "icons": [{ "src": "1775117704121_logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ATS Scanner",
+      "short_name": "ATS",
+      "description": "Scan your resume against a job description",
+      "url": "/ats.html",
+      "icons": [{ "src": "1775117704121_logo.png", "sizes": "192x192" }]
+    }
+  ]
+}
